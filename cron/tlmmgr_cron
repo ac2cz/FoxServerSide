@@ -1,0 +1,6 @@
+MAILTO=g0kla@arrl.net,jfitzgerald@alum.wpi.edu
+*/5 * * * * /home/tlmmgr/cron/leaderboard.cron
+* * * * * /home/tlmmgr/cron/service_running
+* * * * * /home/tlmmgr/cron/server_running
+*/5 * * * * /home/tlmmgr/cron/extract_fox1
+55 23 * * * /home/tlmmgr/cron/unprocessed_files
