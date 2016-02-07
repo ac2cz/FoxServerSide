@@ -1,0 +1,16 @@
+#!/bin/bash
+
+logfile=~/FoxServer/server_running.log
+DIR=/home/tlmmgr/FoxServer/`date +%Y/%m/%d/`
+
+case "$(/bin/ls $DIR | /bin/grep -v processed | /bin/grep -v null | wc -l)" in
+
+0) echo "FoxServer processed all files in $DIR on $(date)" >> $logfile
+;;
+
+*) echo "AMSAT.org FoxServer did not process all files on $(date)" >> $logfile
+    /bin/mail -s "AMSAT.org Server did not process all files today" 16465751481@tmomail.net <<EOF
+$DIR
+EOF
+;;
+esac
