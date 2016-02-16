@@ -8,7 +8,7 @@ case "$(/bin/ps auxwww | /bin/grep FoxServer.jar | /bin/grep -v grep | wc -l)" i
     cd ~/FoxServer
     /bin/ps auxwww | grep FoxServer.jar > /tmp/ps.out
     /bin/cat ~/.fox_pw | /usr/bin/java -jar ~/FoxServer/FoxServer.jar g0kla FOXDB & >> $logfile 2>&1 &
-    /bin/mail -s "TEST Server was not running and was restarted" 16465751481@tmomail.net < /tmp/ps.out
+    /bin/mail -s "Server was not running and was restarted" 16465751481@tmomail.net < /tmp/ps.out
     rm /tmp/ps.out
 ;;
 
@@ -16,7 +16,7 @@ case "$(/bin/ps auxwww | /bin/grep FoxServer.jar | /bin/grep -v grep | wc -l)" i
 ;;
 
 *) echo "FoxServer running MULTIPLE times $(date)" >> $logfile
-    /bin/mail -s "TEST Server is running multipe copies" 16465751481@tmomail.net <<EOF
+    /bin/mail -s "Server is running multipe copies" 16465751481@tmomail.net <<EOF
 Multiple copies
 EOF
 ;;
