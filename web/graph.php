@@ -13,8 +13,10 @@
    $reset = $_GET['reset'];
    $uptime = $_GET['uptime'];
    $num = $_GET['rows'];
+   $port = $_GET['port'];
    $raw='conv';
+   if ($port == "") $port = 8080;
    #echo ("http://localhost:8080/field/$arg1/$arg2/$raw/$num/$reset/$uptime");
-   $a = file_get_contents("http://localhost:8080/field/$arg1/$arg2/$raw/$num/$reset/$uptime");
+   $a = file_get_contents("http://localhost:$port/field/$arg1/$arg2/$raw/$num/$reset/$uptime");
    echo ($a);
 ?>

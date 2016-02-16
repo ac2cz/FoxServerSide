@@ -1,0 +1,177 @@
+FOX TELEMETRY SERVER MANUAL
+===========================
+
+Version: 0.1
+Date: 15 November 2015
+Author: Chris Thompson G0KLA
+
+1.0 Introduction
+~~~~~~~~~~~~~~~~
+This document details the Fox Telemetry Server and is intended for the 
+developers and system administrators.
+
+1.1 Architecture
+~~~~~~~~~~~~~~~~
+The Fox Telemetry Server consists of several components:
+- The TCP Server, FoxServer
+- The MySql Server and the FOXDB database
+- The Web Service, FoxService
+- The cron scripts that monitor the running processes and extract the data
+
+
+2.0 FoxServer
+~~~~~~~~~~~~~
+The TCP Server is a java application that listens on port 41042 for TCP
+connections.  It starts a thread for each connection from a thread pool.  The
+pool is limited to 100 threads and subsequent requests are rejected.
+
+Each time FoxTelem connects to the TCP Server it sends a single STP file. This
+is received by the server and written to disk.  The received file is then
+processed and stored in the database. If the database write fails, then the
+file remains on disk but is unprocessed.
+TODO: We need to send an alert if the database is not reachable.
+
+The received files are stored in a file structure as follows:
+/home/tlmmgr/FoxServer/YYYY/MM/DD
+The daily directory DD stores all of the received STP files.  In the case of
+a failure, the STP files in this directory can easily be reprocessed.  Note
+that processed files are given a ".processed" extension.
+
+The FoxServer writes all output to a log file. Catestrophic uncaught errors
+are written to stdout/stderr and will cause an email to be sent from cron.
+
+The log file is automatically named FoxServerYYMMDD.log.
+
+TODO: The log file is not currently rolled over or purged.  A new log
+is started when the server is restarted (if its on the next day) but otherwise
+it grows unchecked.  This needs to be fixed.
+
+2.1 Reprocessing STP Files
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+The fox server can reprocess all of the stp files in a directory.  You
+need to be in /home/tlmmgr/FoxServer because it will try to read the
+spacecraft directory from the current dir.
+
+The command is:
+java -jar FoxServer -s <dir>
+
+All of the files in <dir> will be processed.  Each is deleted as it is processed.
+So this should be run against a copy of files.
+
+2.2 Processing lowfwd
+~~~~~~~~~~~~~~~~~~~~~
+The stp.tar.gz files can be expanded and processed as described in 2.1, but this
+will not work for logfwd, which has all of the stp files in the same file. It
+needs to be expanded first.  Put the logfwd file in a suitable directory, then
+use the following command:
+
+parsestp.py <logfwd>
+
+This will expand all of the stp files into the directory.  parsestp.py is in
+/home/tlmmgr/bin, which is in the path of tlmmgr.
+
+
+3.0 FOXDB Database
+~~~~~~~~~~~~~~~~~~
+The database is hosted by MySql and is called FOXDB.  This database needs
+to be created before the server is first run.  The server will create all
+of the required tables if they do not exist. 
+
+Currently the following tables are in FOXDB.  There are a set of tables
+for each satellite.  While the data structure could have supported multiple
+satellite in the same table, this structure was choosen because nothing 
+prevents the spacefraft having different data structures.  The fields in the
+table are defined in the spacecraft directory, just as they are for the file
+layout in the FoxTelem decoder.  In fact the table layout is identical to the
+storage format for FoxTelem.
+
++-------------------+
+| Tables_in_FOXDB   |
++-------------------+
+| Fox1MAXTELEMETRY  |
+| Fox1MINTELEMETRY  |
+| Fox1RAD2TELEMETRY |
+| Fox1RADTELEMETRY  |
+| Fox1RTTELEMETRY   |
+| Fox3MAXTELEMETRY  |
+| Fox3MINTELEMETRY  |
+| Fox3RAD2TELEMETRY |
+| Fox3RADTELEMETRY  |
+| Fox3RTTELEMETRY   |
+| Fox4MAXTELEMETRY  |
+| Fox4MINTELEMETRY  |
+| Fox4RAD2TELEMETRY |
+| Fox4RADTELEMETRY  |
+| Fox4RTTELEMETRY   |
+| STP_HEADER        |
++-------------------+
+
+The table STP_HEADER holds one record for each frame received from a ground
+station.  All of the STP header fields are stored in this table.  If we wish
+to add an STP header field in the future, then this table would need to be
+extended to hold it.
+
+
+4.0 Fox Web Service
+~~~~~~~~~~~~~~~~~~~
+We need a translation mechanism to display data on the website.  We want to be
+able to view the latest telemetry in human readable form.  We could write that
+data to a file as part of a batch extract, but it is more convenient to read
+it from the database.  The database contains the raw values, so either we 
+must store the translated values or we must translate them on the fly as we
+display them.  The Fox Web Service reads from the database and translates the
+raw telemetry before it is displayed on the website.
+
+This is perhaps a pseudo web service because it does not follow any industry
+standard approach.  FoxService is a java application that listens on port 8080.
+This port is not open externally and can only be reached by processes running
+on the production machine.  This suits our purposes as the web server can reach
+it.
+
+To display the telemetry we must call the web service from a web page. For
+example from a php script we can do the following:
+<?php 
+   $a = file_get_contents("http://localhost:8080/1A");
+   echo ($a);
+?>
+
+This calls the FoxService, which is listening on port 8080, and posts "1A"
+as part of a HTTP GET request.  The service returns a formatted HTML table
+containing the telemetry for Fox-1A. Passing 1C or 1D will return the
+telemetry for those spacecraft.
+
+You can test this locally on lansing182 with wget "http://localhost:8080/1A".
+
+The Service will also return a table of data for a given field if it is passed 
+the field as the next part of the path name.  So "http://localhost:8080/1A/FIELD"
+will return a table of data for the telemetry paramater FIELD.  The filed names
+are defined in the spacecraft directory.
+
+This is all fairly rudimentary, but can be built out with as much sophistication
+as we like.  We can define the format for requests and return any data that we
+want.
+
+The log file is automatically named FoxServiceYYMMDD.log.
+
+TODO: The log file is not currently rolled over or purged.  A new log
+is started when the service is restarted (if its on the next day) but otherwise
+it grows unchecked.  This needs to be fixed.
+
+
+5.0 Cron Scripts
+~~~~~~~~~~~~~~~~
+Two scripts monitor the running applications. They run every minute from cron 
+- server_running
+- service_running
+
+This scripts start the server and service after a reboot. They confirm it
+is active and send a text message if the server or service is down.  The
+also warn if duplicat processes are running.
+
+Every 5 minutes extract_fox1 is run. This dumps the Fox1 tables into CSV format
+and compresses them into a tar ball.  This is copied into the web directory. 
+This is the file that FoxTelem pulls down when "Fetch Server Data" is run.  It 
+is effectively a snapshot of the server database in FoxTelem file format. The
+extract process stores a copy of the extrated files in:
+/home/tlmmgr/FoxServer/extract
+

@@ -8,6 +8,7 @@
 
 <?php
    $id = $_GET['id'];
-   $a = file_get_contents("http://localhost:8080/frame/$id/1");
+   $port = $_GET['port'];
+   $a = file_get_contents("http://localhost:$port/frame/$id/1");
    echo ($a);
 ?>
