@@ -1,0 +1,4 @@
+* * * * * /home/cthompson/cron/server_running
+* * * * * /home/cthompson/cron/service_running
+* * * * * /home/cthompson/cron/test_service_running
+*/5 * * * * /home/cthompson/cron/extract_fox
