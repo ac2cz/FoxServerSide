@@ -7,16 +7,16 @@ case "$(/bin/ps auxwww | /bin/grep FoxServer.jar | /bin/grep -v grep | wc -l)" i
 0) echo "FoxServer is not running, restarting $(date)" >> $logfile
     cd ~/FoxServer
     /bin/ps auxwww | grep FoxServer.jar > /tmp/ps.out
-    /usr/bin/java -jar ~/FoxServer/FoxServer.jar & >> $logfile 2>&1 &
-    /bin/mail -s "AMSAT.org Server was not running and was restarted" 16465751481@tmomail.net < /tmp/ps.out
+    cat ~/.fox_pw | /usr/bin/java -jar ~/FoxServer/FoxServer.jar g0kla FOXDB & >> $logfile 2>&1 &
+    /bin/mail -s "TEST Server was not running and was restarted" 16465751481@tmomail.net < /tmp/ps.out
     rm /tmp/ps.out
 ;;
 
 1) #all seems well, so check it is actually responding
 ;;
 
-*) echo "AMSAT.org FoxServer running MULTIPLE times $(date)" >> $logfile
-    /bin/mail -s "Server is running multipe copies" 16465751481@tmomail.net <<EOF
+*) echo "FoxServer running MULTIPLE times $(date)" >> $logfile
+    /bin/mail -s "TEST Server is running multipe copies" 16465751481@tmomail.net <<EOF
 Multiple copies
 EOF
 ;;

@@ -2,21 +2,22 @@
 
 DATE=`date +%Y-%m-%d-%T`
 DIR=~/FoxServer/extract
+password=$(/bin/cat ~/.fox_pw)
 
 function extract {
     ID=$1
-    mysql --user=g0kla --password=amsatfox --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}RTTELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/Fox${ID}rttelemetry.log
-    mysql --user=g0kla --password=amsatfox --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}MINTELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/Fox${ID}mintelemetry.log
-    mysql --user=g0kla --password=amsatfox --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}MAXTELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/Fox${ID}maxtelemetry.log
-    mysql --user=g0kla --password=amsatfox --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}RADTELEMETRY order by resets, uptime, type; " | sed 's/\t/,/g' > $DIR/Fox${ID}radtelemetry.log
-    mysql --user=g0kla --password=amsatfox --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}RAD2TELEMETRY order by resets, uptime, type; " | sed 's/\t/,/g' > $DIR/Fox${ID}radtelemetry2.log
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}RTTELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/Fox${ID}rttelemetry.log
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}MINTELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/Fox${ID}mintelemetry.log
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}MAXTELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/Fox${ID}maxtelemetry.log
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}RADTELEMETRY order by resets, uptime, type; " | sed 's/\t/,/g' > $DIR/Fox${ID}radtelemetry.log
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}RAD2TELEMETRY order by resets, uptime, type; " | sed 's/\t/,/g' > $DIR/Fox${ID}radtelemetry2.log
 }
 
 function extractHerci {
     ID=$1
-    mysql --user=g0kla --password=amsatfox --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}HERCI_HS order by resets, uptime; " | sed 's/\t/,/g' > $DIR/Fox${ID}herciHSdata.log
-    mysql --user=g0kla --password=amsatfox --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}HERCI_HS_HEADER order by resets, uptime; " | sed 's/\t/,/g' > $DIR/Fox${ID}herciHSheader.log
-    mysql --user=g0kla --password=amsatfox --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}HERCI_HS_PACKET order by resets, uptime; " | sed 's/\t/,/g' > $DIR/Fox${ID}herciHSpackets.log
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}HERCI_HS order by resets, uptime; " | sed 's/\t/,/g' > $DIR/Fox${ID}herciHSdata.log
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}HERCI_HS_HEADER order by resets, uptime; " | sed 's/\t/,/g' > $DIR/Fox${ID}herciHSheader.log
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}HERCI_HS_PACKET order by resets, uptime; " | sed 's/\t/,/g' > $DIR/Fox${ID}herciHSpackets.log
 }
 
 extract 1
