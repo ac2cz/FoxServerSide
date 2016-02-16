@@ -21,9 +21,6 @@ function extractHerci {
 }
 
 extract 1
-extract 3
-extract 4
-extractHerci 4
 
 cd $DIR
 rm -rf FOXDB
