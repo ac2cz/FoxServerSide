@@ -6,6 +6,7 @@ DATE=`date +%Y-%m-%d-%T`
 DIR=~/cron
 OPS_DIR=~/tlm/ops
 password=$(/bin/cat ~/.fox_pw)
+MAIL_TO="foxtelm@amsatfox.org g0kla@arrl.net"
 
 function checkMaxReset {
     ID=$1
@@ -17,7 +18,7 @@ function checkMaxReset {
     case "$(/bin/grep $RESET $OPS_DIR/FOX${1}T0.txt  | wc -l)" in
 
     0) echo "Fox $1 is missing latest reset $RESET in the T0 File. $(date)" > /tmp/resets.out
-        /bin/mail -s "Fox $1 missing reset" g0kla@arrl.net < /tmp/resets.out
+        /bin/mail -s "Fox $1 missing reset" $MAIL_TO < /tmp/resets.out
         rm /tmp/resets.out
     ;;
 
