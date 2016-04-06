@@ -19,6 +19,7 @@
     if ($id == 3) $name="1Cliff";
     if ($id == 4) $name="1D";
     echo "<h1 class=entry-title>FOX-$name Telemetry Leaderboard</h1>";
+    #echo "<blockquote> FOX-$name server is down for maintenance.  Frames in FoxTelem will be automatically uploaded when the server is back online</blockquote><br><br>";
     $conn = mysql_connect($dbhost, $dbuser, $dbpass);
    
    if(! $conn )
@@ -93,7 +94,7 @@
    
    while($row = mysql_fetch_array($retval, MYSQL_ASSOC))
    {
-      echo "<tr><td>{$row['receiver']}</td>  ".
+      echo "<tr><td><a href=ground_station.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td>  ".
          "<td align='center'>{$row['DUV']}</td>".
          "<td align='center'>{$row['HighSpeed']}</td> </tr> ";
    }
