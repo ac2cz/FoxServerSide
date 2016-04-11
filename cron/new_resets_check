@@ -6,7 +6,7 @@ DATE=`date +%Y-%m-%d-%T`
 DIR=~/cron
 OPS_DIR=~/tlm/ops
 password=$(/bin/cat ~/.fox_pw)
-MAIL_TO="foxtelm@amsatfox.org g0kla@arrl.net"
+MAIL_TO="g0kla@arrl.net marklhammond@gmail.com glasbrenner@mindspring.com"
 
 function checkMaxReset {
     ID=$1
