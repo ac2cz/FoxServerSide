@@ -1,0 +1,5 @@
+# stp_header index for reprocessing the header records
+# drop this index after use as it adds time to each insert and is not
+# otherwise needed
+
+ALTER TABLE STP_HEADER ADD INDEX `update_idx` (receiver, sequenceNumber, resets, uptime, id);
