@@ -36,7 +36,7 @@
         }
         $stations = 0; 
         while($row = mysql_fetch_array($retval, MYSQL_ASSOC)) {
-            echo " {$row['receiver']} ";
+            echo "<a href=ground_station.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a> ";
             $stations = $stations + 1;
             if ($stations == 5) {
                 $stations=0;
@@ -77,6 +77,9 @@
     $DB = $_GET['db'];
     $PORT = $_GET['port'];
 
+    if ($DB == "") { $DB="FOXDB"; }
+    if ($is == "") { $id=1; }
+
     $where="where id=$id";
     $name=getName($id);
     if ($id == 'A') {
@@ -96,7 +99,7 @@
         "<td align='center'><strong>DUV Frames</strong></td>".
         "<td align='center'><strong>9k6 Frames</strong></td>".
         "<td align='center'><strong>Last 7 days</strong></td>";
-   echo "<td rowspan=20>";
+   echo "<td rowspan=200>";
    if ($id=='A') {
       latest(1, $PORT);
       latest(3, $PORT);
