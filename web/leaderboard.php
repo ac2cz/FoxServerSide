@@ -18,7 +18,7 @@
         global $DB, $conn, $PORT;
         $name=getName($i);
         echo	"<a href=leaderboard.php?id=$i&db=$DB><strong>$name:</strong></a> <a href=health.php?id=$i&port=$PORT>latest spacecraft health </a> <br>";
-        $sql = "select count(date_time) from STP_HEADER where id=$i and  timestampdiff(MINUTE,date_time,now()) < 90;";
+        $sql = "select count(*) from STP_HEADER where id=$i and  timestampdiff(MINUTE,date_time,now()) < 90;";
         mysql_select_db($DB);
         $retval = mysql_query( $sql, $conn );
         if(! $retval ) {
@@ -26,7 +26,7 @@
         }
  
         $row = mysql_fetch_array($retval, MYSQL_ASSOC);
-        echo "Frames last 90 mins : {$row['count(date_time)']} </br>";
+        echo "Frames last 90 mins : {$row['count(*)']} </br>";
         echo "From ground stations: <br>";
         $sql = "select distinct receiver from STP_HEADER where id=$i and timestampdiff(MINUTE,date_time,now()) < 90 order by resets desc, uptime desc;";
         mysql_select_db($DB);
@@ -46,7 +46,7 @@
          echo "<br> ";
          echo "<br> ";
 
-         $sql = "select count(date_time) from STP_HEADER where id=$i and timestampdiff(HOUR,date_time,now()) < 24;";
+         $sql = "select count(*) from STP_HEADER where id=$i and timestampdiff(HOUR,date_time,now()) < 24;";
           mysql_select_db($DB);
           $retval = mysql_query( $sql, $conn );
           if(! $retval ) {
@@ -54,9 +54,9 @@
           }
  
           $row = mysql_fetch_array($retval, MYSQL_ASSOC);
-          echo "Frames Received last 24 hours: {$row['count(date_time)']} </br>";
+          echo "Frames Received last 24 hours: {$row['count(*)']} </br>";
 
-          $sql = "select count(receiver) from STP_HEADER where id=$i";
+          $sql = "select count(*) from STP_HEADER where id=$i";
           mysql_select_db($DB);
           $retval = mysql_query( $sql, $conn );
           if(! $retval ) {
@@ -65,7 +65,7 @@
    
           $row = mysql_fetch_array($retval, MYSQL_ASSOC);
 
-          echo	"Total Frames Since Launch: {$row['count(receiver)']} <br>".
+          echo	"Total Frames Since Launch: {$row['count(*)']} <br>".
 	"<br>";
           echo "<br>";
     }
