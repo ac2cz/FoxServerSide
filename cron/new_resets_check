@@ -7,10 +7,11 @@ DIR=~/cron
 OPS_DIR=~/tlm/ops
 password=$(/bin/cat ~/.fox_pw)
 MAIL_TO="g0kla@arrl.net marklhammond@gmail.com glasbrenner@mindspring.com"
+#MAIL_TO="g0kla@arrl.net"
 
 function checkMaxReset {
     ID=$1
-    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e "SELECT max(resets) from STP_HEADER ;" | sed 's/\t/,/g' > $DIR/max_reset.log
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e "SELECT max(resets) from STP_HEADER where id=$ID ;" | sed 's/\t/,/g' > $DIR/max_reset.log
 
     #/bin/grep -Fv  $DIR/max_reset.log  $OPS_DIR/FOX${1}T0.txt > $DIR/missing_resets.log
     #case "$(cat $DIR/missing_resets.log  | wc -l)" in
