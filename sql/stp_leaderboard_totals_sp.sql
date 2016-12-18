@@ -51,7 +51,8 @@ from STP_HEADER_COUNT_TEMP;
 
 select receiver, sum(DUV) DUV, sum(HighSpeed) HighSpeed, sum(last) last 
 from STP_HEADER_COUNT_TEMP
-group by receiver;
+group by receiver
+order by DUV DESC;
 
 drop table STP_HEADER_COUNT_TEMP;
 drop table STP_HEADER_ARCHIVE_TEMP;
