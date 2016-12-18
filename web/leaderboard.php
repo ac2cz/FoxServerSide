@@ -9,6 +9,7 @@
 
     function getName($n) {
         if ($n == 1) return "Fox-1A";
+        if ($n == 2) return "RadFxSat";
         if ($n == 3) return "Fox-1Cliff";
         if ($n == 4) return "Fox-1D";
         return "FOX"; 
@@ -36,7 +37,7 @@
         }
         $stations = 0; 
         while($row = mysql_fetch_array($retval, MYSQL_ASSOC)) {
-            echo "<a href=ground_station.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a> ";
+            echo " {$row['receiver']} ";
             $stations = $stations + 1;
             if ($stations == 5) {
                 $stations=0;
@@ -77,14 +78,13 @@
     $DB = $_GET['db'];
     $PORT = $_GET['port'];
 
-    if ($DB == "") { $DB="FOXDB"; }
-    if ($is == "") { $id=1; }
-
-    $where="where id=$id";
+    $where="where STP_HEADER.id=$id";
+    $archive_where="and STP_HEADER.id=STP_HEADER_ARCHIVE_COUNT.id and STP_HEADER.receiver=STP_HEADER_ARCHIVE_COUNT.receiver";
     $name=getName($id);
     if ($id == 'A') {
         $name = "FOX";
         $where="";
+    	$archive_where="on STP_HEADER.receiver=STP_HEADER_ARCHIVE_COUNT.receiver";
     }
     echo "<h1 class=entry-title>$name Telemetry Leaderboard</h1> ";
     $conn = mysql_connect($dbhost, $dbuser, $dbpass);
@@ -99,9 +99,10 @@
         "<td align='center'><strong>DUV Frames</strong></td>".
         "<td align='center'><strong>9k6 Frames</strong></td>".
         "<td align='center'><strong>Last 7 days</strong></td>";
-   echo "<td rowspan=200>";
+   echo "<td rowspan=20>";
    if ($id=='A') {
       latest(1, $PORT);
+      latest(2, $PORT);
       latest(3, $PORT);
       latest(4, $PORT);
    } else {
@@ -109,7 +110,7 @@
    }
    echo "</td>";
    echo	"</tr>";
-   $sql = "select receiver, sum(case when source like '%duv' then 1 else 0 end) DUV, sum(case when source like '%highspeed' then 1 else 0 end) HighSpeed, sum(case when timestampdiff(DAY,date_time,now()) < 7 then 1 else 0 end) last from STP_HEADER $where group by receiver order by DUV DESC";
+   $sql = "call StpLeaderboardTotals()";
    mysql_select_db($DB);
    $retval = mysql_query( $sql, $conn );
    if(! $retval ) {
