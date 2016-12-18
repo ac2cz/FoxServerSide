@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Script to check if FOX has had a new reset
+
+DATE=`date +%Y-%m-%d-%T`
+password=$(/bin/cat ~/.fox_pw)
+
+    FILE=$1
+    mysql --user=g0kla --password=$password --database=FOXDB < $FILE 
+
