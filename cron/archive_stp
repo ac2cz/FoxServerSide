@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Script to archive the STP_HEADER table.  Run once for all satellites
+
+DATE=`date +%Y-%m-%d-%T`
+DIR=~/cron
+password=$(/bin/cat ~/.fox_pw)
+MAIL_TO="g0kla@arrl.net"
+
+mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " call ArchiveSTPHeaders();" > $DIR/archive.log
+
+# If return code of mysql not 0 then mail error
+#if [ $? -ne 0 ]; then
+if [ $? -eq 0 ]; then
+        /bin/mail -s "Error Running the STP Archive Stored Procedure" $MAIL_TO < $DIR/archive.log
+fi
+
+
