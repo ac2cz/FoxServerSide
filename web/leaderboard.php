@@ -57,7 +57,7 @@
           $row = mysql_fetch_array($retval, MYSQL_ASSOC);
           echo "Frames Received last 24 hours: {$row['count(*)']} </br>";
 
-          $sql = "select count(*) from STP_HEADER where id=$i";
+          $sql = "select (select count(*) from STP_HEADER where id=1) + (select total from STP_ARCHIVE_TOTALS where id=1) as sumCount;";
           mysql_select_db($DB);
           $retval = mysql_query( $sql, $conn );
           if(! $retval ) {
@@ -66,13 +66,13 @@
    
           $row = mysql_fetch_array($retval, MYSQL_ASSOC);
 
-          echo	"Total Frames Since Launch: {$row['count(*)']} <br>".
+          echo	"Total Frames since launch: {$row['sumCount']} <br>".
 	"<br>";
           echo "<br>";
     }
 
     $dbhost = 'localhost:3036';
-    $dbuser = 'foxrpt';
+    $dbuser = 'g0kla';
     $dbpass = 'amsatfox';
     $id = $_GET['id'];
     $DB = $_GET['db'];
