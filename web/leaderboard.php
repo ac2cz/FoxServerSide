@@ -19,11 +19,11 @@
         global $DB, $conn, $PORT;
         $name=getName($i);
         echo	"<a href=leaderboard.php?id=$i&db=$DB><strong>$name:</strong></a> <a href=health.php?id=$i&port=$PORT>latest spacecraft health </a> <br>";
-        $sql = "select count(*) from STP_HEADER where id=$i and  timestampdiff(MINUTE,date_time,now()) < 90;";
+        $sql = "select count(*) from STP_HEADER where id=$i and timestampdiff(MINUTE,date_time,now()) < 90;";
         mysql_select_db($DB);
         $retval = mysql_query( $sql, $conn );
         if(! $retval ) {
-            die('Could not get data: ' . mysql_error());
+            die("Could not get 90 min data for $i : " . mysql_error());
         }
  
         $row = mysql_fetch_array($retval, MYSQL_ASSOC);
@@ -77,7 +77,8 @@
     $id = $_GET['id'];
     $DB = $_GET['db'];
     $PORT = $_GET['port'];
-
+    if ($id == "") { $id = "1"; }
+    if ($DB == "") { $DB="FOXDB"; }
     $where="where STP_HEADER.id=$id";
     $archive_where="and STP_HEADER.id=STP_HEADER_ARCHIVE_COUNT.id and STP_HEADER.receiver=STP_HEADER_ARCHIVE_COUNT.receiver";
     $name=getName($id);
