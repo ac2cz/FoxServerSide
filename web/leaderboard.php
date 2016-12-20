@@ -18,7 +18,7 @@
     function latest($i) {
         global $DB, $conn, $PORT;
         $name=getName($i);
-        echo	"<a href=leaderboard.php?id=$i&db=$DB><strong>$name:</strong></a> <a href=health.php?id=$i&port=$PORT>latest spacecraft health </a> <br>";
+        echo	"<a href=leaderboard.php?id=$i&db=$DB><strong class=entry-title>$name</strong></a> <a href=health.php?id=$i&port=$PORT>latest spacecraft health </a> <br>";
         $sql = "select count(*) from STP_HEADER where id=$i and timestampdiff(MINUTE,date_time,now()) < 90;";
         mysql_select_db($DB);
         $retval = mysql_query( $sql, $conn );
@@ -27,7 +27,17 @@
         }
  
         $row = mysql_fetch_array($retval, MYSQL_ASSOC);
-        echo "Frames last 90 mins : {$row['count(*)']} </br>";
+        echo "Frames - last 90 mins: {$row['count(*)']}";
+        $sql = "select count(*) from STP_HEADER where id=$i and timestampdiff(HOUR,date_time,now()) < 24;";
+          mysql_select_db($DB);
+          $retval = mysql_query( $sql, $conn );
+          if(! $retval ) {
+             die('Could not get data: ' . mysql_error());
+          }
+ 
+          $row = mysql_fetch_array($retval, MYSQL_ASSOC);
+          echo ", last 24 hours: {$row['count(*)']} </br>";
+
         echo "From ground stations: <br>";
         $sql = "select distinct receiver from STP_HEADER where id=$i and timestampdiff(MINUTE,date_time,now()) < 90 order by resets desc, uptime desc;";
         mysql_select_db($DB);
@@ -46,16 +56,6 @@
          }
          echo "<br> ";
          echo "<br> ";
-
-         $sql = "select count(*) from STP_HEADER where id=$i and timestampdiff(HOUR,date_time,now()) < 24;";
-          mysql_select_db($DB);
-          $retval = mysql_query( $sql, $conn );
-          if(! $retval ) {
-             die('Could not get data: ' . mysql_error());
-          }
- 
-          $row = mysql_fetch_array($retval, MYSQL_ASSOC);
-          echo "Frames Received last 24 hours: {$row['count(*)']} </br>";
 
           $sql = "select (select count(*) from STP_HEADER where id=1) + (select total from STP_ARCHIVE_TOTALS where id=1) as sumCount;";
           mysql_select_db($DB);
@@ -100,10 +100,9 @@
         "<td align='center'><strong>DUV Frames</strong></td>".
         "<td align='center'><strong>9k6 Frames</strong></td>".
         "<td align='center'><strong>Last 7 days</strong></td>";
-   echo "<td rowspan=20>";
+   echo "<td rowspan=200>";
    if ($id=='A') {
       latest(1, $PORT);
-      latest(2, $PORT);
       latest(3, $PORT);
       latest(4, $PORT);
    } else {
