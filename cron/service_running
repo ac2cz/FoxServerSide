@@ -8,7 +8,7 @@ case "$(/bin/ps auxwww | /bin/grep FoxService.jar | /bin/grep -v grep | wc -l)" 
 0) echo "FoxService is not running on $server, restarting $(date)" >> $logfile
     cd ~/FoxServer
     /bin/ps auxwww | /bin/grep FoxService.jar > /tmp/ps.out
-    /bin/cat ~/.fox_pw | /usr/bin/java -jar ~/FoxServer/FoxService.jar foxrpt FOXDB 8080 & >> $logfile 2>&1 &
+    /bin/cat ~/.foxrpt_pw | /usr/bin/java -jar ~/FoxServer/FoxService.jar foxrpt FOXDB 8080 & >> $logfile 2>&1 &
     /bin/mail -s "Fox WEB Service was not running on $server and was restarted" g0kla@arrl.net 16465751481@tmomail.net < /tmp/ps.out
     rm /tmp/ps.out
 ;;
