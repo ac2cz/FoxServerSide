@@ -15,17 +15,13 @@
     $DB = $_GET['db'];
     $STATION = $_GET['station'];
 
+    if (!is_numeric($id)) { die("invalid paramater"); }
     if ($id == "") $id=1;
     if ($DB == "") $DB="FOXDB";
     if ($id == 1) $name="1A";
     if ($id == 3) $name="1Cliff";
     if ($id == 4) $name="1D";
-    $where1="id=$id and";
-    if ($id == 'A') {
-        $where1="";
-    }
-
-    echo "<h1 class=entry-title>FOX-$name: Ground Station $STATION</h1>";
+    echo "<h1 class=entry-title>FOX-$name: Ground Station $STATION - LAST 7 DAYS</h1>";
     $conn = mysql_connect($dbhost, $dbuser, $dbpass);
    
    if(! $conn )
@@ -38,7 +34,7 @@
         "<td align='center'><strong>DUV Frames</strong></td>".
         "<td align='center'><strong>HighSpeed Frames</strong></td>";
 
-  $sql = "select count(date_time) from STP_HEADER where $where1 receiver='$STATION' and timestampdiff(MINUTE,date_time,now()) < 90;";
+  $sql = sprintf("select count(date_time) from STP_HEADER where id=%d and receiver='%s' and timestampdiff(MINUTE,date_time,now()) < 90;",$id,$STATION);
    mysql_select_db($DB);
    $retval = mysql_query( $sql, $conn );
    if(! $retval ) {
@@ -48,7 +44,7 @@
    $row = mysql_fetch_array($retval, MYSQL_ASSOC);
    echo "<td rowspan=20><strong>Frames Received last 90 mins : </strong>{$row['count(date_time)']} </br>";
 
-  $sql = "select count(date_time) from STP_HEADER where $where1 receiver='$STATION' and timestampdiff(HOUR,date_time,now()) < 24;";
+  $sql = sprintf("select count(date_time) from STP_HEADER where id=%d and receiver='%s' and timestampdiff(HOUR,date_time,now()) < 24",$id,$STATION);;
    mysql_select_db($DB);
    $retval = mysql_query( $sql, $conn );
    if(! $retval ) {
@@ -60,7 +56,7 @@
 
    echo	"</td>".
 	"</tr>";
-   $sql = "select receiver, sum(case when source like '%duv' then 1 else 0 end) DUV, sum(case when source like '%highspeed' then 1 else 0 end) HighSpeed from STP_HEADER where $where1 receiver='$STATION'";
+   $sql = sprintf("select receiver, sum(case when source like '%%duv' then 1 else 0 end) DUV, sum(case when source like '%%highspeed' then 1 else 0 end) HighSpeed from STP_HEADER where id=%d and receiver='%s'",$id,$STATION);
    mysql_select_db($DB);
    $retval = mysql_query( $sql, $conn );
    if(! $retval ) { die('Could not get data: ' . mysql_error()); }
@@ -74,12 +70,7 @@
 
    echo "</table>";
    
-   
-	$where="t.id=$id and s.id=$id and";
-    if ($id == 'A') {
-	$where="";
-    }
-   $sql = "select count(*) as count from Fox1RTTELEMETRY t, STP_HEADER s where $where t.resets=s.resets and t.uptime=s.uptime and s.receiver='$STATION'";
+   $sql = sprintf("select count(*) as count from Fox1RTTELEMETRY t, STP_HEADER s where t.id=%d and t.id=s.id and t.resets=s.resets and t.uptime=s.uptime and s.receiver='%s'",$id,$STATION);
    mysql_select_db($DB);
    $retval = mysql_query( $sql, $conn );
    if(! $retval ) { die('Could not get data: ' . mysql_error()); }
@@ -87,7 +78,7 @@
    $RTPAYLOADS="{$row['count']}";
    echo "<br>Real Time Payloads: $RTPAYLOADS </br>";
 
-   $sql = "select count(*) as count from Fox1MAXTELEMETRY t, STP_HEADER s where $where t.resets=s.resets and t.uptime=s.uptime and s.receiver='$STATION'";
+   $sql = sprintf("select count(*) as count from Fox1MAXTELEMETRY t, STP_HEADER s where t.id=%d and t.id=s.id and t.resets=s.resets and t.uptime=s.uptime and s.receiver='%s'",$id,$STATION);
    mysql_select_db($DB);
    $retval = mysql_query( $sql, $conn );
    if(! $retval ) { die('Could not get data: ' . mysql_error()); }
@@ -95,7 +86,7 @@
    $MAXPAYLOADS="{$row['count']}";
    echo "Max Payloads: $MAXPAYLOADS </br>";
 
-   $sql = "select count(*) as count from Fox1MINTELEMETRY t, STP_HEADER s where $where t.resets=s.resets and t.uptime=s.uptime and s.receiver='$STATION'";
+   $sql = sprintf("select count(*) as count from Fox1MINTELEMETRY t, STP_HEADER s where t.id=%d and t.id=s.id and t.resets=s.resets and t.uptime=s.uptime and s.receiver='%s'",$id,$STATION);
    mysql_select_db($DB);
    $retval = mysql_query( $sql, $conn );
    if(! $retval ) { die('Could not get data: ' . mysql_error()); }
@@ -103,7 +94,7 @@
    $MINPAYLOADS="{$row['count']}";
    echo "Min Payloads: $MINPAYLOADS </br>";
 
-   $sql = "select count(*) as count from Fox1RADTELEMETRY t, STP_HEADER s where $where t.resets=s.resets and t.uptime=s.uptime and s.receiver='$STATION'";
+   $sql = sprintf("select count(*) as count from Fox1RADTELEMETRY t, STP_HEADER s where t.id=%d and t.id=s.id and t.resets=s.resets and t.uptime=s.uptime and s.receiver='%s'",$id,$STATION);
    mysql_select_db($DB);
    $retval = mysql_query( $sql, $conn );
    if(! $retval ) { die('Could not get data: ' . mysql_error()); }
@@ -116,7 +107,7 @@
    echo "<strong>Total Payloads:</strong> $TOTAL </br>";
 
    echo "<p><h2>Using Demodulator:</h2>";
-   $sql = "select demodulator from STP_HEADER where $where1 receiver='$STATION' order by date_time DESC limit 1";
+   $sql = sprintf("select demodulator from STP_HEADER where id=%d and receiver='%s' order by date_time DESC limit 1",$id,$STATION);
    mysql_select_db($DB);
    $retval = mysql_query( $sql, $conn );
    if(! $retval ) { die('Could not get data: ' . mysql_error()); }
@@ -124,7 +115,7 @@
    echo "- {$row['demodulator']}<br> ";
 
    echo "<p><h2>Station Receiver(s):</h2>";
-   $sql = "select distinct(receiver_rf) from STP_HEADER where $where1 receiver_rf != 'NONE' and receiver='$STATION'";
+   $sql = sprintf("select distinct(receiver_rf) from STP_HEADER where id=%d and receiver_rf != 'NONE' and receiver='%s'",$id,$STATION);
    mysql_select_db($DB);
    $retval = mysql_query( $sql, $conn );
    if(! $retval ) { die('Could not get data: ' . mysql_error()); }

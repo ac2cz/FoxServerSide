@@ -8,6 +8,7 @@
 
 <?php
    $id = $_GET['id'];
+   if (!is_numeric($id)) { die("invalid paramater"); }
    $a = file_get_contents("http://localhost:8080/frame/$id/1");
    echo ($a);
 ?>
