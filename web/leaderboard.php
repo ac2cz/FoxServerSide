@@ -1,15 +1,15 @@
 <html>
 <head>
 <title>Fox Server Leaderboard</title>
-<link rel="stylesheet" type="text/css" media="all" href="http://www.amsat.org/wordpress/wp-content/themes/twentyeleven-amsat-child/style.css" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.amsat.org/wordpress/wp-content/themes/generatepress/style.css" />
 </head>
 <body>
 <img src='http://www.amsat.org/wordpress/wp-content/uploads/2014/08/amsat2.png'>
 <?php
 
     function getName($n) {
-        if ($n == 1) return "Fox-1A";
-        if ($n == 2) return "RadFxSat";
+        if ($n == 1) return "AO-85 (Fox-1A)";
+        if ($n == 2) return "RadFxSat (Fox-1B)";
         if ($n == 3) return "Fox-1Cliff";
         if ($n == 4) return "Fox-1D";
         return "FOX"; 
@@ -73,11 +73,16 @@
     }
 
     $dbhost = 'localhost:3036';
-    $dbuser = 'g0kla';
+    $dbuser = 'foxrpt';
     $dbpass = 'amsatfox';
+
     $id = $_GET['id'];
-    $DB = $_GET['db'];
-    $PORT = $_GET['port'];
+    if (!is_numeric($id)) { die("invalid paramater"); }
+    if (id < 0 || $id > 5) { die("invalid FoxId"); }
+    # Uncomment DB and port for test environments, if needed
+    #$DB = $_GET['db'];
+    #$PORT = $_GET['port'];
+
     if ($id == "") { $id = "1"; }
     if ($DB == "") { $DB="FOXDB"; }
     $where="where STP_HEADER.id=$id";
@@ -95,23 +100,29 @@
    {
       die('Could not connect: ' . mysql_error());
    }
-   
+ 
    echo "<table cellspacing='0' cellpadding='0' width=1024 border='0'>";
    echo "<tr><td><strong>Ground station</strong></td>".
         "<td align='center'><strong>DUV Frames</strong></td>".
         "<td align='center'><strong>9k6 Frames</strong></td>".
         "<td align='center'><strong>Last 7 days</strong></td>";
-   echo "<td rowspan=200>";
-   if ($id=='A') {
+   # ROW SPAN needs to be at least 5x the number of spacecraft to display
+      echo "<td rowspan=50 valign=top>";
+   if ($id=='0') {
       latest(1, $PORT);
-      latest(3, $PORT);
-      latest(4, $PORT);
+      latest(2, $PORT);
    } else {
       latest($id, $PORT);
    }
    echo "</td>";
    echo	"</tr>";
-   $sql = "call StpLeaderboardTotals()";
+
+   if ($id==0) {
+       $sql = "call StpLeaderboardTotals()";
+   } else {
+       $sql = "call StpLeaderboardTotalsById($id)";
+   }
+
    mysql_select_db($DB);
    $retval = mysql_query( $sql, $conn );
    if(! $retval ) {
