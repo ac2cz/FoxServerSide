@@ -58,16 +58,27 @@
          echo "<br> ";
          echo "<br> ";
 
-          $sql = "select (select count(*) from STP_HEADER where id=1) + (select total from STP_ARCHIVE_TOTALS where id=1) as sumCount;";
+          $sql = "select (select count(*) from STP_HEADER where id=$i) as sumCountHeader;";
           mysql_select_db($DB);
           $retval = mysql_query( $sql, $conn );
           if(! $retval ) {
              die('Could not get data: ' . mysql_error());
           }
    
-          $row = mysql_fetch_array($retval, MYSQL_ASSOC);
+          $row1 = mysql_fetch_array($retval, MYSQL_ASSOC);
+          $headerCount=$row1['sumCountHeader'];
 
-          echo	"Total Frames since launch: {$row['sumCount']} <br>".
+          $sql = "select (select total from STP_ARCHIVE_TOTALS where id=$i) as sumCountArchive;";
+          mysql_select_db($DB);
+          $retval = mysql_query( $sql, $conn );
+          if(! $retval ) {
+             die('Could not get data: ' . mysql_error());
+          }
+   
+          $row2 = mysql_fetch_array($retval, MYSQL_ASSOC);
+          $archiveCount=$row2['sumCountArchive'];
+	  $totalCount=$headerCount+$archiveCount;
+          echo	"Total Frames since launch: {$totalCount} <br>".
 	"<br>";
           echo "<br>";
     }
