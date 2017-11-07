@@ -124,6 +124,7 @@
       latest(2, $PORT);
    } else {
       latest($id, $PORT);
+      echo "<a href=leaderboard.php?id=0&db=FOXDB>Show all spacecraft on leaderboard</a>";
    }
    echo "</td>";
    echo	"</tr>";
