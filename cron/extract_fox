@@ -22,6 +22,12 @@ function extractHerci {
     mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}HERCI_HS_PACKET order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/Fox${ID}herciHSpackets.log
 }
 
+function extractWOD {
+    ID=$1
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}WODTELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/Fox${ID}wodtelemetry.log
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}WODRADTELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/Fox${ID}wodradtelemetry.log
+}
+
 function packageLogs {
     ID=$1
     LOGDIR=$2
@@ -40,5 +46,8 @@ extract 1 ao85
 packageLogs 1 ao85
 extract 2 radfxsat
 packageLogs 2 radfxsat
+extract 5 fox1e
+extractWOD 5 fox1e
+packageLogs 5 fox1e
 
 #rm -f *.log

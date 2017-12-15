@@ -36,8 +36,8 @@ def processLog(sat, logFile):
 
 def processType(match):
     logs = glob.glob(dir + os.sep + match)
-    if len(logs) == 0:
-        print ('No log files found in ' + dir)
+    #if len(logs) == 0:
+    #    print ('No log files found in ' + dir + 'for: ' + match)
     for item in logs:
         log = os.path.basename(item)
         id=log[0:4]
@@ -72,6 +72,5 @@ processType("*maxtelemetry.log")
 processType("*mintelemetry.log")
 processType("*radtelemetry.log")
 processType("*radtelemetry2.log")
-processType("*herciHSdata.log")
-processType("*herciHSheader.log")
-processType("*herciHSpackets.log")
+processType("*wodtelemetry.log")
+processType("*wodradtelemetry.log")
