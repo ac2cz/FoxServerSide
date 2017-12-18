@@ -75,7 +75,7 @@
         }
         $stations = 0; 
         while($row = mysql_fetch_array($retval, MYSQL_ASSOC)) {
-            echo "<a href=ground_station.php?id=$i&db=$DB&station={$row['receiver']}>{$row['receiver']}</a>";
+            echo "<a href=ground_station.php?id=$i&db=$DB&station={$row['receiver']}>{$row['receiver']}</a> ";
             $stations = $stations + 1;
             if ($stations == 5) {
                 $stations=0;
@@ -94,7 +94,7 @@
     $id = $_GET['id'];
     $show = $_GET['show'];
     if ($show == "")
-        $ROW_LIMIT=10;
+        $ROW_LIMIT=13;
     else
         $ROW_LIMIT=999999;
     if (!is_numeric($id)) { die("invalid paramater"); }
