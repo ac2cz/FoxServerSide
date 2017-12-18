@@ -12,13 +12,17 @@
         if ($n == 2) return "RadFxSat (Fox-1B)";
         if ($n == 3) return "Fox-1Cliff";
         if ($n == 4) return "Fox-1D";
+        if ($n == 5) return "Fox-1E";
         return "FOX"; 
     }
 
     function latest($i, $imageDir) {
         global $DB, $conn, $PORT;
         $name=getName($i);
-        echo	"<a href=leaderboard.php?id=$i&db=$DB><strong class=entry-title>$name</strong></a> <a href=health.php?id=$i&port=$PORT>latest spacecraft health </a> <br>";
+        echo "<a href=leaderboard.php?id=$i&db=$DB><strong class=entry-title>$name</strong></a> <a href=health.php?id=$i&port=$PORT>latest spacecraft health </a>";
+        if ($imageDir != "")
+            echo "| <a href=$imageDir>Camera Images</a>";
+        echo " <br>";
 
         $sql = "select count(*) from STP_HEADER where id=$i and timestampdiff(HOUR,date_time,now()) < 24;";
           mysql_select_db($DB);
@@ -37,26 +41,7 @@
             die("Could not get 90 min data for $i : " . mysql_error());
         }
         $row = mysql_fetch_array($retval, MYSQL_ASSOC);
-        echo " - last 90 mins: ".number_format($row['count(*)'])." <br>";
-
-        echo "From ground stations: <br>";
-        $sql = "select distinct receiver from STP_HEADER where id=$i and timestampdiff(MINUTE,date_time,now()) < 90 order by resets desc, uptime desc;";
-        mysql_select_db($DB);
-        $retval = mysql_query( $sql, $conn );
-        if(! $retval ) {
-            die('Could not get data: ' . mysql_error());
-        }
-        $stations = 0; 
-        while($row = mysql_fetch_array($retval, MYSQL_ASSOC)) {
-            echo " {$row['receiver']} ";
-            $stations = $stations + 1;
-            if ($stations == 5) {
-                $stations=0;
-                echo "<br>";
-            }
-         }
-         echo "<br> ";
-         echo "<br> ";
+        echo " - last 90 mins: ".number_format($row['count(*)'])." ";
 
          # Now calculate the total for this sat and display it
           $sql = "select (select count(*) from STP_HEADER where id=$i) as sumCountHeader;";
@@ -79,9 +64,27 @@
           $row2 = mysql_fetch_array($retval, MYSQL_ASSOC);
           $archiveCount=$row2['sumCountArchive'];
 	  $totalCount=$headerCount+$archiveCount;
-          echo	"Total Frames since launch: ".number_format($totalCount)." <br>".
-	"<br>";
-          echo "<br>";
+          echo	"- since launch: ".number_format($totalCount)." <br>";
+
+        echo "From ground stations: <br>";
+        $sql = "select distinct receiver from STP_HEADER where id=$i and timestampdiff(MINUTE,date_time,now()) < 90 order by resets desc, uptime desc;";
+        mysql_select_db($DB);
+        $retval = mysql_query( $sql, $conn );
+        if(! $retval ) {
+            die('Could not get data: ' . mysql_error());
+        }
+        $stations = 0; 
+        while($row = mysql_fetch_array($retval, MYSQL_ASSOC)) {
+            echo "<a href=ground_station.php?id=$i&db=$DB&station={$row['receiver']}>{$row['receiver']}</a>";
+            $stations = $stations + 1;
+            if ($stations == 5) {
+                $stations=0;
+                echo "<br>";
+            }
+         }
+         echo "<br> ";
+         echo "<br> ";
+
     }
 
     $dbhost = 'localhost:3036';
@@ -89,6 +92,11 @@
     $dbpass = 'amsatfox';
 
     $id = $_GET['id'];
+    $show = $_GET['show'];
+    if ($show == "")
+        $ROW_LIMIT=10;
+    else
+        $ROW_LIMIT=999999;
     if (!is_numeric($id)) { die("invalid paramater"); }
     if (id < 0 || $id > 5) { die("invalid FoxId"); }
     # Uncomment DB and port for test environments, if needed
@@ -114,16 +122,18 @@
    }
  
    echo "<table cellspacing='0' cellpadding='0' width=1024 border='0'>";
-   echo "<tr><td><strong>Ground station</strong></td>".
+   echo "<tr><td><strong>Num</strong></td>".
+        "<td><strong>Ground station</strong></td>".
         "<td align='center'><strong>DUV Frames</strong></td>".
         "<td align='center'><strong>9k6 Frames</strong></td>".
         "<td align='center'><strong>Last 7 days</strong></td>";
    # ROW SPAN needs to be at least 5x the number of spacecraft to display
       echo "<td rowspan=50 valign=top>";
    if ($id=='0') {
-      latest(1, $PORT);
-      latest(2, $PORT);
-      latest(4, $PORT);
+      latest(1, "");
+      latest(2, "");
+      latest(4, "fox1d/images");
+      latest(5, $PORT);
    } else {
       latest($id, $PORT);
       echo "<a href=leaderboard.php?id=0&db=FOXDB>Show all spacecraft on leaderboard</a>";
@@ -143,14 +153,43 @@
       die('Could not get data: ' . mysql_error());
    }
    
-   while($row = mysql_fetch_array($retval, MYSQL_ASSOC))
+   $j=1;
+   while($row = mysql_fetch_array($retval, MYSQL_ASSOC) )
    {
-      echo "<tr><td><a href=ground_station.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td>  ".
+        if ($j < $ROW_LIMIT) {
+            echo "<tr><td align='center'>$j</td> ".
+            "<td><a href=ground_station.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td>  ".
          "<td align='center'>".number_format($row['DUV'])."</td>".
          "<td align='center'>".number_format($row['HighSpeed'])."</td> ".
          "<td align='center'>".number_format($row['last'])."</td> </tr> ";
+        }
+         $j++;
    }
    echo "</table>";
+   if ($show == "")
+       echo "<a href=leaderboard.php?id=$id&db=$DB&show=all>Show whole leaderboard</a>";
+   else
+       echo "<a href=leaderboard.php?id=$id&db=$DB>Show short leaderboard</a>";
+   echo "<br>";
+   echo "<br>";
+   echo "<table><tr><td>";
+   echo "<h2>Latest Image from Fox-1D</h2>";
+   $files = scandir('/var/www/html/tlm/fox1d/images');
+   $newest_file = $files[3]; # 0 and 1 are . and .. and index.html
+   if ($newest_file != "") {
+       echo '<figure><img style="border:10px solid black;" src="fox1d/images/'.$newest_file.'"alt="Image from spacecraft Fox-1D" /><figcaption>'.$newest_file.'</figcaption></figure>';
+   }
+   echo "</td><td>";
+   echo "<h2>FoxTelem</h2>";
+   echo "<b>Latest Software:</b><br>";
+   echo "<a href=http://amsat.us/FoxTelem/Windows>Download for Windows</a>";
+   echo "<br>";
+   echo "<a href=http://amsat.us/FoxTelem/Linux>Download for Linux</a>";
+   echo "<br>";
+   echo "<a href=http://amsat.us/FoxTelem/Mac>Download for Mac</a>";
+   echo "<br>";
+   echo "<b>Help and Tutorials:</b><br>";
+   echo "</td></tr></table>";
    mysql_close($conn);
 ?>
 </body>
