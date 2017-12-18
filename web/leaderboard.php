@@ -15,7 +15,7 @@
         return "FOX"; 
     }
 
-    function latest($i) {
+    function latest($i, $imageDir) {
         global $DB, $conn, $PORT;
         $name=getName($i);
         echo	"<a href=leaderboard.php?id=$i&db=$DB><strong class=entry-title>$name</strong></a> <a href=health.php?id=$i&port=$PORT>latest spacecraft health </a> <br>";
@@ -28,16 +28,16 @@
           }
  
           $row = mysql_fetch_array($retval, MYSQL_ASSOC);
-          echo "Frames - last 24 hours: {$row['count(*)']} ";
+          echo "Frames - last 24 hours: ".number_format($row['count(*)'])." ";
+
         $sql = "select count(*) from STP_HEADER where id=$i and timestampdiff(MINUTE,date_time,now()) < 90;";
         mysql_select_db($DB);
         $retval = mysql_query( $sql, $conn );
         if(! $retval ) {
             die("Could not get 90 min data for $i : " . mysql_error());
         }
- 
         $row = mysql_fetch_array($retval, MYSQL_ASSOC);
-        echo " - last 90 mins: {$row['count(*)']} <br>";
+        echo " - last 90 mins: ".number_format($row['count(*)'])." <br>";
 
         echo "From ground stations: <br>";
         $sql = "select distinct receiver from STP_HEADER where id=$i and timestampdiff(MINUTE,date_time,now()) < 90 order by resets desc, uptime desc;";
@@ -58,6 +58,7 @@
          echo "<br> ";
          echo "<br> ";
 
+         # Now calculate the total for this sat and display it
           $sql = "select (select count(*) from STP_HEADER where id=$i) as sumCountHeader;";
           mysql_select_db($DB);
           $retval = mysql_query( $sql, $conn );
@@ -78,7 +79,7 @@
           $row2 = mysql_fetch_array($retval, MYSQL_ASSOC);
           $archiveCount=$row2['sumCountArchive'];
 	  $totalCount=$headerCount+$archiveCount;
-          echo	"Total Frames since launch: {$totalCount} <br>".
+          echo	"Total Frames since launch: ".number_format($totalCount)." <br>".
 	"<br>";
           echo "<br>";
     }
@@ -99,7 +100,7 @@
     $where="where STP_HEADER.id=$id";
     $archive_where="and STP_HEADER.id=STP_HEADER_ARCHIVE_COUNT.id and STP_HEADER.receiver=STP_HEADER_ARCHIVE_COUNT.receiver";
     $name=getName($id);
-    if ($id == 'A') {
+    if ($id == '0') {
         $name = "FOX";
         $where="";
     	$archive_where="on STP_HEADER.receiver=STP_HEADER_ARCHIVE_COUNT.receiver";
@@ -122,6 +123,7 @@
    if ($id=='0') {
       latest(1, $PORT);
       latest(2, $PORT);
+      latest(4, $PORT);
    } else {
       latest($id, $PORT);
       echo "<a href=leaderboard.php?id=0&db=FOXDB>Show all spacecraft on leaderboard</a>";
@@ -144,9 +146,9 @@
    while($row = mysql_fetch_array($retval, MYSQL_ASSOC))
    {
       echo "<tr><td><a href=ground_station.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td>  ".
-         "<td align='center'>{$row['DUV']}</td>".
-         "<td align='center'>{$row['HighSpeed']}</td> ".
-         "<td align='center'>{$row['last']}</td> </tr> ";
+         "<td align='center'>".number_format($row['DUV'])."</td>".
+         "<td align='center'>".number_format($row['HighSpeed'])."</td> ".
+         "<td align='center'>".number_format($row['last'])."</td> </tr> ";
    }
    echo "</table>";
    mysql_close($conn);
