@@ -175,8 +175,8 @@
    echo "<table><tr><td>";
    echo "<h2>Latest Image from Fox-1D</h2>";
    $files = scandir('/var/www/html/tlm/fox1d/images');
-   $newest_file = $files[3]; # 0 and 1 are . and .. and index.html
-   if ($newest_file != "") {
+   $newest_file = $files[2]; # 0 and 1 are . and .. and index.html
+   if ($newest_file != "" && $newest_file != 'index.html') {
        echo '<figure><img style="border:10px solid black;" src="fox1d/images/'.$newest_file.'"alt="Image from spacecraft Fox-1D" /><figcaption>'.$newest_file.'</figcaption></figure>';
    }
    echo "</td><td>";
