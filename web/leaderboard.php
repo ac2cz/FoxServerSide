@@ -97,7 +97,7 @@ if($_POST["add"] || $_POST["call"]) {
     $id = $_GET['id'];
     $show = $_GET['show'];
     if ($show == "")
-        $ROW_LIMIT=2;
+        $ROW_LIMIT=11;
     else
         $ROW_LIMIT=999999;
     if (!is_numeric($id)) { die("invalid paramater"); }
