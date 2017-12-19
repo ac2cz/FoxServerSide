@@ -87,6 +87,9 @@
 
     }
 
+if($_POST["add"] || $_POST["call"]) {
+    $callsign=$_POST['call'];
+}
     $dbhost = 'localhost:3036';
     $dbuser = 'foxrpt';
     $dbpass = 'amsatfox';
@@ -94,7 +97,7 @@
     $id = $_GET['id'];
     $show = $_GET['show'];
     if ($show == "")
-        $ROW_LIMIT=13;
+        $ROW_LIMIT=2;
     else
         $ROW_LIMIT=999999;
     if (!is_numeric($id)) { die("invalid paramater"); }
@@ -153,10 +156,18 @@
       die('Could not get data: ' . mysql_error());
    }
    
+
+   if($callsign == "")
+   if (empty($_SESSION['user'])) {
+       $callsign="";
+   } else {
+       $callsign=$_SESSION['user'];
+   }
+
    $j=1;
    while($row = mysql_fetch_array($retval, MYSQL_ASSOC) )
    {
-        if ($j < $ROW_LIMIT) {
+        if ($j < $ROW_LIMIT || strcasecmp($row['receiver'], $callsign) == 0) {
             echo "<tr><td align='center'>$j</td> ".
             "<td><a href=ground_station.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td>  ".
          "<td align='center'>".number_format($row['DUV'])."</td>".
@@ -166,10 +177,22 @@
          $j++;
    }
    echo "</table>";
+echo "<table><tr><td>";
    if ($show == "")
        echo "<a href=leaderboard.php?id=$id&db=$DB&show=all>Show whole leaderboard</a>";
    else
        echo "<a href=leaderboard.php?id=$id&db=$DB>Show short leaderboard</a>";
+$self=$_SERVER['PHP_SELF'];
+$params="id=$id&db=$DB";
+
+$form = '</td><td><form action="'.$self.'?'.$params.'" method="post">
+Include Ground station: 
+<input type="text" name="call"/>
+</form></td></td>';
+echo $form;
+echo "</table>";
+#<input type="submit" value="Show" name="add"/>
+
    echo "<br>";
    echo "<br>";
    echo "<table><tr><td>";
@@ -191,6 +214,7 @@
    echo "<b>Help and Tutorials:</b><br>";
    echo "</td></tr></table>";
    mysql_close($conn);
+    $_SESSION['user'] = $callsign;
 ?>
 </body>
 </html>
