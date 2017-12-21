@@ -77,7 +77,7 @@
         while($row = mysql_fetch_array($retval, MYSQL_ASSOC)) {
             echo "<a href=ground_station.php?id=$i&db=$DB&station={$row['receiver']}>{$row['receiver']}</a> ";
             $stations = $stations + 1;
-            if ($stations == 5) {
+            if ($stations == 7) {
                 $stations=0;
                 echo "<br>";
             }
@@ -191,6 +191,7 @@ Include Ground station:
 </form></td></td>';
 echo $form;
 echo "</table>";
+#<input type="text" value='.$callsign.' name="call"/>
 #<input type="submit" value="Show" name="add"/>
 
    echo "<br>";

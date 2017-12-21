@@ -95,6 +95,6 @@ def main():
     # We process all files in the directory that end with the names for the log files
     imageDir = sys.argv[1]
     while(True):
-        processSat(4, imageDir, "/home/ec2-user/tlm/fox1d/images")
+        processSat(4, imageDir, "/home/tlmmgr/tlm/fox1d/images")
 
 main()
