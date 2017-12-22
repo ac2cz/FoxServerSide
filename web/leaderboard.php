@@ -1,25 +1,47 @@
+<?php
+session_start()
+?>
 <html>
 <head>
+<?php
+if($_POST["call"]) {
+    $callsign=$_POST['call'];
+    $_SESSION['user'] = $callsign;
+    header("Location: " . $_SERVER['REQUEST_URI']);
+    exit();
+}
+if($_POST["clear"]) {
+    $_SESSION['user'] = "";
+    header("Location: " . $_SERVER['REQUEST_URI']);
+    exit();
+}
+?>
 <title>Fox Server Leaderboard</title>
 <link rel="stylesheet" type="text/css" media="all" href="http://www.amsat.org/wordpress/wp-content/themes/generatepress/style.css" />
 </head>
 <body>
 <img src='http://www.amsat.org/wordpress/wp-content/uploads/2014/08/amsat2.png'>
+<style>
+table, th, td {
+    border: 0px; 
+}
+</style>
 <?php
 
     function getName($n) {
         if ($n == 1) return "AO-85 (Fox-1A)";
-        if ($n == 2) return "RadFxSat (Fox-1B)";
+        if ($n == 2) return "AO-91 (RadFxSat)";
         if ($n == 3) return "Fox-1Cliff";
         if ($n == 4) return "Fox-1D";
-        if ($n == 5) return "Fox-1E";
+        if ($n == 5) return "Fox-1E (RadFxSat2)";
         return "FOX"; 
     }
 
     function latest($i, $imageDir) {
         global $DB, $conn, $PORT;
         $name=getName($i);
-        echo "<a href=leaderboard.php?id=$i&db=$DB><strong class=entry-title>$name</strong></a> <a href=health.php?id=$i&port=$PORT>latest spacecraft health </a>";
+        $self=$_SERVER['PHP_SELF'];
+        echo "<a href=$self?id=$i&db=$DB><strong class=entry-title>$name</strong></a> | <a href=health.php?id=$i&port=$PORT>latest spacecraft health </a>";
         if ($imageDir != "")
             echo "| <a href=$imageDir>Camera Images</a>";
         echo " <br>";
@@ -87,9 +109,6 @@
 
     }
 
-if($_POST["add"] || $_POST["call"]) {
-    $callsign=$_POST['call'];
-}
     $dbhost = 'localhost:3036';
     $dbuser = 'foxrpt';
     $dbpass = 'amsatfox';
@@ -136,10 +155,11 @@ if($_POST["add"] || $_POST["call"]) {
       latest(1, "");
       latest(2, "");
       latest(4, "fox1d/images");
-      latest(5, $PORT);
    } else {
-      latest($id, $PORT);
-      echo "<a href=leaderboard.php?id=0&db=FOXDB>Show all spacecraft on leaderboard</a>";
+      if ($id == 4)
+          latest(4, "fox1d/images");
+      else
+          latest($id, "");
    }
    echo "</td>";
    echo	"</tr>";
@@ -157,13 +177,9 @@ if($_POST["add"] || $_POST["call"]) {
    }
    
 
-   if($callsign == "")
-   if (empty($_SESSION['user'])) {
-       $callsign="";
-   } else {
+   if ($callsign == "" && !empty($_SESSION['user'])) {
        $callsign=$_SESSION['user'];
    }
-
    $j=1;
    while($row = mysql_fetch_array($retval, MYSQL_ASSOC) )
    {
@@ -177,26 +193,31 @@ if($_POST["add"] || $_POST["call"]) {
          $j++;
    }
    echo "</table>";
-echo "<table><tr><td>";
-   if ($show == "")
-       echo "<a href=leaderboard.php?id=$id&db=$DB&show=all>Show whole leaderboard</a>";
-   else
-       echo "<a href=leaderboard.php?id=$id&db=$DB>Show short leaderboard</a>";
 $self=$_SERVER['PHP_SELF'];
+echo "<table class='tlm_table'><tr><td class=tlm_td>";
+   if ($show == "")
+       echo "<a href=$self?id=$id&db=$DB&show=all>Show whole leaderboard</a> ";
+   else
+       echo "<a href=$self?id=$id&db=$DB>Show short leaderboard</a> ";
+echo "</td><td>";
+if ($id != 0)
+      echo " <a href=$self?id=0&db=FOXDB>Show all spacecraft on leaderboard</a>";
+echo "</td><td>";
 $params="id=$id&db=$DB";
-
-$form = '</td><td><form action="'.$self.'?'.$params.'" method="post">
+$form = '<form action="'.$self.'?'.$params.'" method="post">
 Include Ground station: 
 <input type="text" name="call"/>
-</form></td></td>';
+<input type="submit" value="Clear" name="clear"/>
+</form></td>';
 echo $form;
-echo "</table>";
+echo "</td><td width=100>";
+echo "</td></tr></table>";
 #<input type="text" value='.$callsign.' name="call"/>
 #<input type="submit" value="Show" name="add"/>
 
    echo "<br>";
    echo "<br>";
-   echo "<table><tr><td>";
+   echo "<table border=0><tr><td>";
    echo "<h2>Latest Image from Fox-1D</h2>";
    $files = scandir('/var/www/html/tlm/fox1d/images');
    $newest_file = $files[2]; # 0 and 1 are . and .. and index.html
@@ -215,7 +236,6 @@ echo "</table>";
    echo "<b>Help and Tutorials:</b><br>";
    echo "</td></tr></table>";
    mysql_close($conn);
-    $_SESSION['user'] = $callsign;
 ?>
 </body>
 </html>
