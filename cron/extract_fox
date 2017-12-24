@@ -1,44 +1,74 @@
 #!/bin/bash
 
+PROGNAME=$0
 DATE=`date +%Y-%m-%d-%T`
 DIR=~/FoxServer/extract2
 password=$(/bin/cat ~/.fox_pw)
+
+function error_exit() {
+    echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
+    exit 1
+}
 
 function extract {
     ID=$1
     LOGDIR=$2
     mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}RTTELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/Fox${ID}rttelemetry.log
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error_exit "$LINENO: An SQL error has occurred."
+    fi
     mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}MINTELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/Fox${ID}mintelemetry.log
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error_exit "$LINENO: An SQL error has occurred."
+    fi
     mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}MAXTELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/Fox${ID}maxtelemetry.log
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error_exit "$LINENO: An SQL error has occurred."
+    fi
     mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}RADTELEMETRY order by resets, uptime, type; " | sed 's/\t/,/g' > $DIR/$LOGDIR/Fox${ID}radtelemetry.log
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error_exit "$LINENO: An SQL error has occurred."
+    fi
     mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}RAD2TELEMETRY order by resets, uptime, type; " | sed 's/\t/,/g' > $DIR/$LOGDIR/Fox${ID}radtelemetry2.log
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error_exit "$LINENO: An SQL error has occurred."
+    fi
 }
 
 function extractHerci {
     ID=$1
     LOGDIR=$2
     mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}HERCI_HS order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/Fox${ID}herciHSdata.log
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error_exit "$LINENO: An SQL error has occurred in HERCI extract."
+    fi
     mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}HERCI_HS_HEADER order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/Fox${ID}herciHSheader.log
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error_exit "$LINENO: An SQL error has occurred in HERCI extract."
+    fi
     mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}HERCI_HS_PACKET order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/Fox${ID}herciHSpackets.log
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error_exit "$LINENO: An SQL error has occurred in HERCI extract."
+    fi
 }
 
 function packageLogs {
     ID=$1
     LOGDIR=$2
-    cd $DIR/$LOGDIR
-    rm -rf FOXDB
-    tar cf serverlogs.tar *.log
-    gzip -f serverlogs.tar
-    cp -f serverlogs.tar.gz ~/tlm/$LOGDIR
-    ~/cron/convertDB.py .
-    tar cf FOXDB.tar FOXDB
-    gzip -f FOXDB.tar
-    cp -f FOXDB.tar.gz ~/tlm/$LOGDIR
+    cd $DIR/$LOGDIR || error_exit "$LINENO: An error has occurred."
+    rm -rf FOXDB || error_exit "$LINENO: An error has occurred."
+    tar cf serverlogs.tar *.log || error_exit "$LINENO: An error has occurred."
+    gzip -f serverlogs.tar || error_exit "$LINENO: An error has occurred."
+    cp -f serverlogs.tar.gz ~/tlm/$LOGDIR || error_exit "$LINENO: An error has occurred."
+    ~/cron/convertDB.py . || error_exit "$LINENO: An error has occurred."
+    tar cf FOXDB.tar FOXDB || error_exit "$LINENO: An error has occurred."
+    gzip -f FOXDB.tar || error_exit "$LINENO: An error has occurred."
+    cp -f FOXDB.tar.gz ~/tlm/$LOGDIR || error_exit "$LINENO: An error has occurred."
 }
 
-extract 1 ao85
-packageLogs 1 ao85
-extract 2 radfxsat
-packageLogs 2 radfxsat
+extract 1 ao85 || error_exit "$LINENO: An error has occurred."
+packageLogs 1 ao85 || error_exit "$LINENO: An error has occurred."
+#extract 2 radfxsat
+#packageLogs 2 radfxsat
 
 #rm -f *.log
