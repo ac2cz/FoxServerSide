@@ -52,6 +52,23 @@ function extractHerci {
     fi
 }
 
+function extractWOD {
+    ID=$1
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}WODTELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/Fox${ID}wodtelemetry.log
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error_exit "$LINENO: An SQL error has occurred in WOD extract."
+    fi
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}WODRADTELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/Fox${ID}wodradtelemetry.log
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error_exit "$LINENO: An SQL error has occurred in WOD extract."
+    fi
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}WODRAD2TELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/Fox${ID}wodradtelemetry2.log
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error_exit "$LINENO: An SQL error has occurred in WOD extract."
+    fi
+}
+
+
 function packageLogs {
     ID=$1
     LOGDIR=$2
@@ -68,7 +85,13 @@ function packageLogs {
 
 extract 1 ao85 || error_exit "$LINENO: An error has occurred."
 packageLogs 1 ao85 || error_exit "$LINENO: An error has occurred."
-#extract 2 radfxsat
-#packageLogs 2 radfxsat
+extract 2 radfxsat || error_exit "$LINENO: An error has occurred."
+packageLogs 2 radfxsat || error_exit "$LINENO: An error has occurred."
+extract 4 fox1d || error_exit "$LINENO: An error has occurred."
+extractHerci 4 fox1d || error_exit "$LINENO: An error has occurred."
+packageLogs 4 fox1d || error_exit "$LINENO: An error has occurred."
+#extract 5 fox1e || error_exit "$LINENO: An error has occurred."
+#extractWOD 5 fox1e || error_exit "$LINENO: An error has occurred."
+#packageLogs 5 fox1e || error_exit "$LINENO: An error has occurred."
 
 #rm -f *.log
