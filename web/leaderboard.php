@@ -192,20 +192,21 @@ table, th, td {
         }
          $j++;
    }
+   mysql_close($conn);
    echo "</table>";
 $self=$_SERVER['PHP_SELF'];
 echo "<table class='tlm_table'><tr><td class=tlm_td>";
    if ($show == "")
-       echo "<a href=$self?id=$id&db=$DB&show=all>Show whole leaderboard</a> ";
+       echo "<a href=$self?id=$id&db=$DB&show=all>Show all ground stations</a>";
    else
-       echo "<a href=$self?id=$id&db=$DB>Show short leaderboard</a> ";
+       echo "<a href=$self?id=$id&db=$DB>Show short leaderboard</a>";
 echo "</td><td>";
 if ($id != 0)
-      echo " <a href=$self?id=0&db=FOXDB>Show all spacecraft on leaderboard</a>";
+      echo " <a href=$self?id=0&db=FOXDB>| Show all spacecraft</a>";
 echo "</td><td>";
 $params="id=$id&db=$DB";
 $form = '<form action="'.$self.'?'.$params.'" method="post">
-Include Ground station: 
+| Include Ground station: 
 <input type="text" name="call"/>
 <input type="submit" value="Clear" name="clear"/>
 </form></td>';
@@ -219,23 +220,40 @@ echo "</td></tr></table>";
    echo "<br>";
    echo "<table border=0><tr><td>";
    echo "<h2>Latest Image from Fox-1D</h2>";
-   $files = scandir('/var/www/html/tlm/fox1d/images');
+   echo "</td><td width=50>";
+   echo "</td><td><h2>FoxTelem</h2></td></tr>";
+   echo "<td width=400 rowspan=50 valign=top>";
+   $files = scandir('/srv/www/www.amsat.org/public_html/tlm/fox1d/images');
    $newest_file = $files[2]; # 0 and 1 are . and .. and index.html
    if ($newest_file != "" && $newest_file != 'index.html') {
-       echo '<figure><img style="border:10px solid black;" src="fox1d/images/'.$newest_file.'"alt="Image from spacecraft Fox-1D" /><figcaption>'.$newest_file.'</figcaption></figure>';
+       echo '<a href="fox1d/images"><figure><img style="border:10px solid black;" src="fox1d/images/'.$newest_file.'"alt="Image from spacecraft Fox-1D" /><figcaption>'.$newest_file.'</figcaption></figure></a>';
    }
-   echo "</td><td>";
-   echo "<h2>FoxTelem</h2>";
-   echo "<b>Latest Software:</b><br>";
-   echo "<a href=http://amsat.us/FoxTelem/Windows>Download for Windows</a>";
-   echo "<br>";
-   echo "<a href=http://amsat.us/FoxTelem/Linux>Download for Linux</a>";
-   echo "<br>";
-   echo "<a href=http://amsat.us/FoxTelem/Mac>Download for Mac</a>";
-   echo "<br>";
-   echo "<b>Help and Tutorials:</b><br>";
-   echo "</td></tr></table>";
-   mysql_close($conn);
 ?>
+
+  </td><td>
+  </td><td>
+
+<p>
+<a href=http://www.g0kla.com/foxtelem/index.php>FoxTelem</a> is the program you use to decode the data transmissions from the AMSAT Fox-1 series of spacecraft.
+It will decode, store and allow analysis of telemetry and onboard experiments.
+</p>
+<p>
+   <b>Latest Software:</b><br>
+   <a href=http://amsat.us/FoxTelem/Windows>Download for Windows</a>
+   <br>
+   <a href=http://amsat.us/FoxTelem/Linux>Download for Linux</a>
+   <br>
+   <a href=http://amsat.us/FoxTelem/Mac>Download for Mac</a>
+   <br>
+</p>
+   <b>Help and Tutorials:</b><br>
+<p>
+FoxTelem comes with a manual which you can find from the Help menu.  It covers the basics, but Software Defined Radio, Digital Signal processing and telemetry are non trivial topics.  It's relatively easy to decode the first few frames, but you can spend a lifetime perfecting your ground station.  These articles are aimed at taking you a step beyond the basics.
+</p>
+<a href=http://www.g0kla.com/foxtelem/skyplot.php>Analyze your QTH with SKY PLOTs to see how well you are receving</a>
+<br>
+<a href=http://www.g0kla.com/workbench/2016-05-07.php>Use FoxTelem to analyze the received telemetry with graphs</a>
+<br>
+</td></tr></table>
 </body>
 </html>
