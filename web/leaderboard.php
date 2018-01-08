@@ -148,6 +148,7 @@ table, th, td {
         "<td><strong>Ground station</strong></td>".
         "<td align='center'><strong>DUV Frames</strong></td>".
         "<td align='center'><strong>9k6 Frames</strong></td>".
+        "<td align='center'><strong>Total</strong></td>".
         "<td align='center'><strong>Last 7 days</strong></td>";
    # ROW SPAN needs to be at least 5x the number of spacecraft to display
       echo "<td rowspan=50 valign=top>";
@@ -188,6 +189,7 @@ table, th, td {
             "<td><a href=ground_station.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td>  ".
          "<td align='center'>".number_format($row['DUV'])."</td>".
          "<td align='center'>".number_format($row['HighSpeed'])."</td> ".
+         "<td align='center'>".number_format($row['total'])."</td> ".
          "<td align='center'>".number_format($row['last'])."</td> </tr> ";
         }
          $j++;
