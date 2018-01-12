@@ -19,14 +19,22 @@
     // array.  Remember that because a username is user submitted content we must 
     //use htmlentities on it before displaying it to the user. 
 ?> 
+<?php include "../getName.php"; 
+$id = $_GET['id'];
+if (!is_numeric($id)) { die("invalid paramater"); }
+if (id < 0 || $id > 5) { die("invalid FoxId"); }
+if ($id == "") { $id = "1"; }
+$name=getName($id);
+?>
+
 <html>
 <head>
-<title>Fox-1A Time 0 for Resets</title>
+<title><?php echo $name?> Time 0 for Resets</title>
 </head>
 <body>
 <?php include "header.php"; ?>
 
-   <h1 class='entry-title'>FOX-1A Time Zero</h1>
+   <h1 class='entry-title'><?php echo $name ?> Time Zero</h1>
 Use this form to retrieve a set of STP Header records from the database and calculate the Time Zero
 (T0) for a given reset.  Specify the reset, a ground station name (receiver) and the number of records
 to extract.  The latest records are pulled.
@@ -43,7 +51,7 @@ Subtract 1000 for each second of delay bewteen reception of the data and present
 audio to FoxTelem.  e.g. A virtual audio cable introduces delay as does a seperate SDR.
 </i>
 <p>
-Save the calcualted value and enter it into the <a href=edit_t0.php>T0 file</a> 
+Save the calcualted value and enter it into the <a href=edit_t0id.php?id=<?php echo $id?>>T0 file</a> 
 <p>
 
 <form action="<?=$PHP_SELF?>" method="post"> 
@@ -65,7 +73,6 @@ Save the calcualted value and enter it into the <a href=edit_t0.php>T0 file</a>
 <p>
 <br>
 <?php
-   $id=1;
    $arg1 = $_POST['reset'];
    $arg2 = $_POST['rx'];
    $arg3 = $_POST['num'];

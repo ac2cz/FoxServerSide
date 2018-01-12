@@ -19,24 +19,33 @@
     // array.  Remember that because a username is user submitted content we must 
     //use htmlentities on it before displaying it to the user. 
 ?> 
+<?php include "../getName.php";
+$id = $_GET['id'];
+if (!is_numeric($id)) { die("invalid paramater"); }
+if (id < 0 || $id > 5) { die("invalid FoxId"); }
+if ($id == "") { $id = "1"; }
+$name=getName($id);
+?>
+
+<?php include "header.php"; ?>
 <html>
 <head>
-<title>Fox-1A Time 0 for Resets</title>
+<title><?php echo $name?> Time 0 for Resets</title>
 </head>
 <body>
 <?php include "header.php"; ?>
-<h1 class="entry-title">Time Zero for Resets on FOX-1A </h1>
+<h1 class="entry-title">Time Zero for Resets on <?php echo $name?></h1>
 This is the FOX1T0 file that FoxTelem downloads when it starts.  Add new rows to the end of the file when
 the spacecraft experiences a reset.  The format is <i> reset, T0 in milliseconds</i>
 <p>
-First <a href=show_t0.php>calculate the value for T0</a> then enter it as a new row at the end of the file. Save the file so it is available to FoxTelem.  It is written into the same directory as this php script.
+First <a href=show_t0id.php?id=<?php echo $id?>>calculate the value for T0</a> then enter it as a new row at the end of the file. Save the file so it is available to FoxTelem.  It is written into the same directory as this php script.
 <p>
 The T0 file must be continuous and without gaps.  If we experience a gap in the resets e.g. the new reset is 899
 when the last reset was 500, then you can use the form below to add a set of rows.  Enter the Start Reset, the End Reset and the time you want them to have.  Then hit "Add Rows".  A row will be added for each reset.
 <?php
 date_default_timezone_set('UTC');
 $today = date("YmdHis");
-$file_path= "FOX1T0.txt";
+$file_path= "FOX".$id."T0.txt";
 // Open the file to get existing content
 $text = file_get_contents($file_path);
 if($_POST["save"]) {

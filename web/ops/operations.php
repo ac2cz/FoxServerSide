@@ -26,12 +26,20 @@
 </head>
 <body>
 <?php include "header.php"; ?>
+<?php include "../id_loopup.php"; ?>
 <h1 class="entry-title">AMSAT OPERATIONS </h1>
 Logged in as: <?php echo htmlentities($_SESSION['user']['username'], ENT_QUOTES, 'UTF-8'); ?><br /> 
-<br>
 <h2>FOX-1A Maintenance</h2>
-<a href="show_t0.php">Calculate Time Zero for a Reset</a><br /> 
-<a href="edit_t0.php">Edit Time Zero Resets File</a><br /> 
+<a href="show_t0id.php?id=1">Calculate Time Zero for a Reset</a><br /> 
+<a href="edit_t0id.php?id=1">Edit Time Zero Resets File</a><br /> 
+<br>
+<h2>FOX-1B Maintenance</h2>
+<a href="show_t0id.php?id=2">Calculate Time Zero for a Reset</a><br /> 
+<a href="edit_t0id.php?id=2">Edit Time Zero Resets File</a><br /> 
+<br>
+<h2>FOX-1D Maintenance</h2>
+<a href="show_t0id.php?id=4">Calculate Time Zero for a Reset</a><br /> 
+<a href="edit_t0id.php?id=4">Edit Time Zero Resets File</a><br /> 
 <br>
 <h2>Admin</h2>
 <a href="memberlist.php">Ops Team</a><br /> 
