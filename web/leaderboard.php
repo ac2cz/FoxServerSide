@@ -228,8 +228,8 @@ echo "</td></tr></table>";
    echo "</td><td width=50>";
    echo "</td><td><h2>FoxTelem</h2></td></tr>";
    echo "<td width=400 rowspan=50 valign=top>";
-   $files = scandir('/srv/www/www.amsat.org/public_html/tlm/fox1d/images');
-   $newest_file = $files[2]; # 0 and 1 are . and .. and index.html
+   $files = scandir('/srv/www/www.amsat.org/public_html/tlm/fox1d/images', SCANDIR_SORT_DESCENDING);
+   $newest_file = $files[1]; # 1 is .. and index.html is the last entry
    if ($newest_file != "" && $newest_file != 'index.html') {
        echo '<a href="fox1d/images"><figure><img style="border:10px solid black;" src="fox1d/images/'.$newest_file.'"alt="Image from spacecraft Fox-1D" /><figcaption>'.$newest_file.'</figcaption></figure></a>';
    }
