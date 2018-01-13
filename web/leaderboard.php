@@ -46,25 +46,6 @@ table, th, td {
             echo "| <a href=$imageDir>Camera Images</a>";
         echo " <br>";
 
-        $sql = "select count(*) from STP_HEADER where id=$i and timestampdiff(HOUR,date_time,now()) < 24;";
-          mysql_select_db($DB);
-          $retval = mysql_query( $sql, $conn );
-          if(! $retval ) {
-             die('Could not get data: ' . mysql_error());
-          }
- 
-          $row = mysql_fetch_array($retval, MYSQL_ASSOC);
-          echo "Frames - last 24 hours: ".number_format($row['count(*)'])." ";
-
-        $sql = "select count(*) from STP_HEADER where id=$i and timestampdiff(MINUTE,date_time,now()) < 90;";
-        mysql_select_db($DB);
-        $retval = mysql_query( $sql, $conn );
-        if(! $retval ) {
-            die("Could not get 90 min data for $i : " . mysql_error());
-        }
-        $row = mysql_fetch_array($retval, MYSQL_ASSOC);
-        echo " - last 90 mins: ".number_format($row['count(*)'])." ";
-
          # Now calculate the total for this sat and display it
           $sql = "select (select count(*) from STP_HEADER where id=$i) as sumCountHeader;";
           mysql_select_db($DB);
@@ -86,8 +67,30 @@ table, th, td {
           $row2 = mysql_fetch_array($retval, MYSQL_ASSOC);
           $archiveCount=$row2['sumCountArchive'];
 	  $totalCount=$headerCount+$archiveCount;
-          echo	"- since launch: ".number_format($totalCount)." <br>";
+          echo	"Frames: ".number_format($totalCount)." ";
 
+       # Now get the frames in last 24 hours
+        $sql = "select count(*) from STP_HEADER where id=$i and timestampdiff(HOUR,date_time,now()) < 24;";
+          mysql_select_db($DB);
+          $retval = mysql_query( $sql, $conn );
+          if(! $retval ) {
+             die('Could not get data: ' . mysql_error());
+          }
+ 
+          $row = mysql_fetch_array($retval, MYSQL_ASSOC);
+          echo "- last 24 hours: ".number_format($row['count(*)'])." ";
+
+       # Now the frames in last 90 mins
+        $sql = "select count(*) from STP_HEADER where id=$i and timestampdiff(MINUTE,date_time,now()) < 90;";
+        mysql_select_db($DB);
+        $retval = mysql_query( $sql, $conn );
+        if(! $retval ) {
+            die("Could not get 90 min data for $i : " . mysql_error());
+        }
+        $row = mysql_fetch_array($retval, MYSQL_ASSOC);
+        echo " - last 90 mins: ".number_format($row['count(*)'])." <br>";
+
+        # Now the list of ground stations in the last 90 mins
         echo "From ground stations: <br>";
         $sql = "select distinct receiver from STP_HEADER where id=$i and timestampdiff(MINUTE,date_time,now()) < 90 order by resets desc, uptime desc;";
         mysql_select_db($DB);
