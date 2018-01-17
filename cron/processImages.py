@@ -15,7 +15,8 @@ def getFoxName(id):
 # Read all the images in the passed diretory and return as a sorted list
 def parseImageDir(id, imageDir):
     match = str(id) + "_*"
-    images = sorted(glob.glob(imageDir + os.sep + match), reverse=False)
+    images = sorted(glob.glob(imageDir + os.sep + match), key=os.path.getmtime)
+    #images = sorted(glob.glob(imageDir + os.sep + match), reverse=False)
     #if len(images) == 0:
     #    print ('No image files found in ' + imageDir + 'for: ' + match)
     return images
@@ -27,11 +28,12 @@ def buildPage(id, images, prevPage, nextPage):
     content="<html><head><title>Virginia Tech Camera Images from Spacecraft " 
     content=content + getFoxName(id)+"</title>"
     content=content+"""
-<link rel="stylesheet" type="text/css" media="all" href="http://www.amsat.org/wordpress/wp-content/themes/generatepress/style.css />
+<link rel='stylesheet' type='text/css' 
+media="all" href="http://www.amsat.org/wordpress/wp-content/themes/generatepress/style.css" />
                   </head>
                   <body>
                   <img src='http://www.amsat.org/wordpress/wp-content/uploads/2014/08/amsat2.png'> """
-    1ontent=content+"<h1 class=entry-title>Virginia Tech Camera Images from Spacecraft " + getFoxName(id) + "</h1>"
+    content=content+"<h1 class=entry-title>Virginia Tech Camera Images from Spacecraft " + getFoxName(id) + "</h1>"
     if (prevPage != ""):
         content=content+"<a href=" + prevPage + "> &lt; Newer Images</a> |"
     else:
@@ -101,7 +103,10 @@ def makePageName(page_num, total):
 
 def processPage(id, name, prevPage, nextPage, images_for_page, webDir):
         print("Debug: Building Page: " + name + ": prev:" + prevPage + " next:" + nextPage)
-        images_for_page = sorted(images_for_page, reverse=True)
+        #images_for_page = sorted(images_for_page, reverse=True)
+        # We have the list of images in date order and we grab oldest first then build a page
+        # On the page we want the newest first, so we reverse the sub list
+        images_for_page = list(reversed(images_for_page))
         page = buildPage(id, images_for_page, prevPage, nextPage)
         writeWebpage(webDir, page, name)
 
