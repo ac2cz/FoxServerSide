@@ -1,6 +1,7 @@
 #!/bin/bash
 
-logfile=~/FoxServer/pricessimage_running.log
+DATE=`date +%Y%m%d`
+logfile=~/FoxServer/processimage_running${DATE}.log
 server=`/bin/hostname`
 process=processImages.py
 

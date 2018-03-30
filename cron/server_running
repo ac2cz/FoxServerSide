@@ -1,7 +1,21 @@
 #!/bin/bash
+if [ -f ~/cron/PAUSE_SERVER ]; then
+    exit 0
+fi
 
 logfile=~/FoxServer/server_running.log
 server=`/bin/hostname`
+
+bigFiles=$(ls -hl ~/FoxServer/*.log | awk '{print $5}' | grep "G" | wc -l)
+
+if [ $bigFiles -ne 0 ]
+then
+echo "SERVER LOGFILE TOO LARGE: Server may be out of control"
+    /bin/mail -s "$server LOGFILE too large for FoxServer" g0kla@arrl.net 16465751481@tmomail.net <<EOF
+$server Logfile too large for Server
+EOF
+exit 1
+fi
 
 case "$(/bin/ps auxwww | /bin/grep FoxServer.jar | /bin/grep -v grep | wc -l)" in
 

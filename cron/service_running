@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ -f ~/cron/PAUSE_SERVER ]; then
+    exit 0
+fi
+
 logfile=~/FoxServer/service_running.log
 server=`/bin/hostname`
 
