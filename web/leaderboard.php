@@ -32,7 +32,7 @@ table, th, td {
         if ($n == 1) return "AO-85 (Fox-1A)";
         if ($n == 2) return "AO-91 (RadFxSat)";
         if ($n == 3) return "Fox-1Cliff";
-        if ($n == 4) return "Fox-1D";
+        if ($n == 4) return "AO-92 (Fox-1D)";
         if ($n == 5) return "Fox-1E (RadFxSat2)";
         return "FOX"; 
     }
@@ -291,9 +291,13 @@ It will decode, store and allow analysis of telemetry and onboard experiments.
 <p>
 FoxTelem comes with a manual which you can find from the Help menu.  It covers the basics, but Software Defined Radio, Digital Signal processing and telemetry are non trivial topics.  It's relatively easy to decode the first few frames, but you can spend a lifetime perfecting your ground station.  These articles are aimed at taking you a step beyond the basics.
 </p>
+<a href=http://www.g0kla.com/workbench/2018-01-26.php>Earth Plots Tutorial - What they are and how to plot them</a>
+<br>
 <a href=http://www.g0kla.com/foxtelem/skyplot.php>Analyze your QTH with SKY PLOTs to see how well you are receving</a>
 <br>
 <a href=http://www.g0kla.com/workbench/2016-05-07.php>Use FoxTelem to analyze the received telemetry with graphs</a>
+<br>
+<a href=http://www.g0kla.com/sdr/index.php>How to write a Software Defined Radio - SDR and DSP Tutorial</a>
 <br>
 </td></tr></table>
 </body>
