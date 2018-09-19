@@ -43,7 +43,7 @@ table, th, td {
         $self=$_SERVER['PHP_SELF'];
         echo "<a href=$self?id=$i&db=$DB><strong class=entry-title>$name</strong></a> | <a href=health.php?id=$i&port=$PORT>latest spacecraft health </a>";
         if ($imageDir != "")
-            echo "| <a href=$imageDir>Camera Images</a>";
+            echo "| <a href=showImages.php?id=$i>Camera Images</a>";
         echo " <br>";
 
          # Now calculate the total for this sat and display it
@@ -158,9 +158,12 @@ table, th, td {
    if ($id=='0') {
       latest(1, "");
       latest(2, "");
+      latest(3, "fox1c/images");
       latest(4, "fox1d/images");
    } else {
-      if ($id == 4)
+      if ($id == 3)
+          latest(3, "fox1c/images");
+      else if ($id == 4)
           latest(4, "fox1d/images");
       else
           latest($id, "");
@@ -221,18 +224,28 @@ echo "</td></tr></table>";
 #<input type="text" value='.$callsign.' name="call"/>
 #<input type="submit" value="Show" name="add"/>
 
+if ($id==0 || $id == 3 || $id == 4) {
    echo "<br>";
    echo "<br>";
    echo "<table border=0><tr><td>";
-   echo "<h2>Latest Image from Fox-1D</h2>";
+   if ($id == 0) {
+       echo "<h2>Latest Image from Fox-1D</h2>";
+       $imageDir = "fox1d/images";
+   } else if ($id == 4) {
+       echo "<h2>Latest Image from Fox-1D</h2>";
+       $imageDir = "fox1d/images";
+   } else {
+       echo "<h2>Latest Image</h2>";
+       $imageDir = "fox1c/images";
+   }
    echo "</td><td width=50>";
    echo "</td><td><h2>FoxTelem</h2></td></tr>";
    echo "<td width=400 rowspan=50 valign=top>";
    #$files = scandir('/srv/www/www.amsat.org/public_html/tlm/fox1d/images', SCANDIR_SORT_DESCENDING);
-   $files = glob("/srv/www/www.amsat.org/public_html/tlm/fox1d/images/*.jpg");
-    usort($files, function($a, $b){
-        return filemtime($a) < filemtime($b);
-    });
+   $files = glob("/srv/www/www.amsat.org/public_html/tlm/".$imageDir."/*.jpg");
+   usort($files, function($a, $b){
+       return filemtime($a) < filemtime($b);
+   });
 
    $found = FALSE;
    foreach ($files as $filePath) {
@@ -246,29 +259,9 @@ echo "</td></tr></table>";
    }
    #echo "<br>newest: ".$newest_file;
    if ($newest_file != "" && $newest_file != 'index.html') {
-       echo '<a href="fox1d/images"><figure><img style="border:10px solid black;" src="fox1d/images/'.$newest_file.'"alt="Image from spacecraft Fox-1D" /><figcaption>'.$newest_file.'</figcaption></figure></a>';
-        # Now the list of ground stations in the last 90 mins
-        /*
-        echo "From ground stations: <br>";
-        $sql = "select distinct pictureCounter, receiver from STP_HEADER h, fox4jpg_idx i where i.id = h.id and i.resets = h.resets and h.uptime >= i.fromUptime and h.uptime <= i.toUptime and i.pictureCounter = 14 and i.resets=14 order by pictureCounter;";
-        mysql_select_db($DB);
-        $retval = mysql_query( $sql, $conn );
-        if(! $retval ) {
-            die('Could not get data: ' . mysql_error());
-        }
-        $stations = 0; 
-        while($row = mysql_fetch_array($retval, MYSQL_ASSOC)) {
-            echo "<a href=ground_station.php?id=$i&db=$DB&station={$row['receiver']}>{$row['receiver']}</a> ";
-            $stations = $stations + 1;
-            if ($stations == 7) {
-                $stations=0;
-                echo "<br>";
-            }
-         }
-         echo "<br> ";
-         echo "<br> ";
-         */
+       echo '<a href='.$imageDir.'><figure><img style="border:10px solid black;" src="'.$imageDir.'/'.$newest_file.'" alt="Image from spacecraft '.getName($id).'" /><figcaption>'.$newest_file.'</figcaption></figure></a>';
    }
+}
 ?>
 
   </td><td>
