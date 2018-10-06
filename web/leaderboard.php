@@ -208,7 +208,7 @@ table, th, td {
     echo "</table>";
     echo "</div>";
 	
-	
+    echo "<div style='float:left;'>";	
     $self=$_SERVER['PHP_SELF'];
     echo "<table class='tlm_table'><tr><td class=tlm_td>";
     if ($show == "")
@@ -228,14 +228,14 @@ table, th, td {
     echo $form;
     echo "</td><td width=100>";
     echo "</td></tr></table>";
+    echo "</div>";
     #<input type="text" value='.$callsign.' name="call"/>
     #<input type="submit" value="Show" name="add"/>
 
     $idLink = $id;
     if ($id==0 || $id == 3 || $id == 4) {
+    echo "<div class='col-1 clear-right'><br>";
     echo "<br>";
-    echo "<br>";
-    echo "<table border=0><tr><td>";
     if ($id == 0) {
         echo "<h2>Latest Image from Fox-1D</h2>";
         $imageDir = "fox1d/images";
@@ -247,9 +247,6 @@ table, th, td {
         echo "<h2>Latest Image</h2>";
         $imageDir = "fox1c/images";
     }
-    echo "</td><td width=50>";
-    echo "</td><td><h2>FoxTelem</h2></td></tr>";
-    echo "<td width=400 rowspan=50 valign=top>";
     #$files = scandir('/srv/www/www.amsat.org/public_html/tlm/fox1d/images', SCANDIR_SORT_DESCENDING);
     $files = glob("/srv/www/www.amsat.org/public_html/tlm/".$imageDir."/*.jpg");
     usort($files, function($a, $b){
@@ -273,9 +270,9 @@ table, th, td {
 }
 ?>
 
-  </td><td>
-  </td><td>
-
+</div>
+<div class='col-2'>
+<h2>FoxTelem</h2>
 <p>
 <a href=http://www.g0kla.com/foxtelem/index.php>FoxTelem</a> is the program you use to decode the data transmissions from the AMSAT Fox-1 series of spacecraft.
 It will decode, store and allow analysis of telemetry and onboard experiments.
@@ -301,6 +298,6 @@ FoxTelem comes with a manual which you can find from the Help menu.  It covers t
 <br>
 <a href=http://www.g0kla.com/sdr/index.php>How to write a Software Defined Radio - SDR and DSP Tutorial</a>
 <br>
-</td></tr></table>
+</div>
 </body>
 </html>
