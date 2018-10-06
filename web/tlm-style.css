@@ -1,0 +1,238 @@
+leaderboard2.phphtml {
+    overflow-y: scroll;
+}
+
+/* make sure that padding and border are included in total width */
+* {
+    box-sizing: border-box;
+}
+
+body {       
+    font-family: Arial,sans-serif;
+    font-size: 100%;
+    margin: 0px;
+    padding: 4px;
+}
+
+/* mobile settings first */
+    .col-1 { width: 100%; }
+    .col-2 { width: 100%; }  
+    .col-side-bar { width: 100%; } 
+    code { font-size: 0.75em; }
+
+
+/* Settings for desktop size display */
+@media only screen and (min-width: 768px) {
+    .col-1 { width: 20%; }
+    .col-2 { width: 75%; }   
+    .col-side-bar { width: 30%; }
+    code { font-size: 0.9em; }
+}
+
+li { 
+    list-style-type:square;
+	list-style-position:outside;
+	margin: 0px;
+	padding-left: 12px;
+}
+
+p {
+    display: block;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-left: 0;
+    margin-right: 0;
+    line-height: 1.5;
+ }
+
+h1 {
+font-size: 150%;
+color: #006633;
+font-weight: bold;
+margin-top: 6px;
+margin-bottom: 3px;
+} 
+h2 {
+font-size: 120%;
+color: #FF9900;
+font-weight: bold;
+margin-top: 6px;
+margin-bottom: 3px;
+} 
+
+h3 {
+font-size: 100%;
+color: #FF9900;
+font-weight: bold;
+margin-top: 6px;
+margin-bottom: 3px;
+} 
+
+h4 {
+font-size: 100%;
+color: #000000;
+font-weight: bold;
+margin-top: 6px;
+margin-bottom: 3px;
+} 
+
+/* This is the new DIV based approach */
+/* Here is the Header at the top of each page */
+.header {
+    mso-cellspacing: 0in;
+    cellspacing: 0;
+    cellpadding: 0;
+    border: 0;
+    width: 100%;
+}
+
+/* This is the content, the main part of the page */
+.content {
+    PADDING-RIGHT: 0.75pt;
+    PADDING-LEFT: 5pt; 
+    PADDING-BOTTOM: 0.75pt;  
+    PADDING-TOP: 0.0pt; 
+    valign: top;
+    font-size: 100%;
+    float: right;
+}
+
+.content a { 
+    text-decoration: none; color: #0000ff; 
+}
+
+.content a:hover { 
+    text-decoration: underline; color: #0000ff; 
+}
+
+ /* menu content is the list of links on the left hand side */
+.menu-content {
+    PADDING-RIGHT: 0.75pt;
+    PADDING-LEFT: 5pt;
+    PADDING-BOTTOM: 0.75pt;
+    PADDING-TOP: 0.0pt;
+    vertical-align: top;
+    font-size: 80%;
+}
+
+.menu-content a {
+    text-decoration: none; 
+    color: #3d3d3d; 
+}
+
+.menu-content a:hover {
+    text-decoration: underline; 
+    color: silver; 
+}
+
+.menu-content ul   {
+    margin: 0px; 
+    padding: 0px; 
+}
+
+.menu-content li   {       
+    list-style-type: none ;
+    list-style-position: outside;
+    margin: 0px; padding: 4px;
+}
+
+/* Image settings */
+.clear-left {
+    clear: left;
+}
+
+.clear-right {
+    clear: right;
+}
+
+img     {
+    border: 0px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    margin-left:6px;
+    margin-right:6px;
+    max-width:98%;  /* Then we never scale up bigger than original size. 98% looks good on mobile.  width over-rides this */
+    height:auto;
+}
+
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.right {
+    float: right;
+
+}
+
+.left {
+    float: left;
+
+}
+
+/* Side bar formatting */
+.side-bar {
+    word-wrap: break-word;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left:4px;
+    padding-right:4px;  
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left:2px;
+    margin-right:2px;   
+    background-color:LightGrey;
+    float:left;
+}
+
+
+/*
+ * THIS IS ALL LEGACY
+ */
+
+/* # is for id tags.  use id= in the html tag to access this style */
+#content {
+"PADDING-RIGHT: 0.75pt; PADDING-LEFT: 5pt; PADDING-BOTTOM: 0.75pt; WIDTH: 64%; PADDING-TOP: 0.0pt" valign="top" width="64%
+font-size: 80%"
+}
+
+/* Table content is the main body of text on the site */
+.table-content {
+PADDING-RIGHT: 0.75pt; PADDING-LEFT: 5pt; PADDING-BOTTOM: 0.75pt; PADDING-TOP: 0.0pt; 
+vertical-align:top;
+font-size: 100%
+
+ }
+ 
+.table-content a { text-decoration: none; color: #0000ff; }
+.table-content a:hover { text-decoration: underline; color: #0000ff; }
+
+/*
+.table-content li { list-style-type:square; list-style-position:outside; margin-left: 18px; }
+ */
+ 
+/*  other styles */
+
+
+pre {
+    tab-size: 4;
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+/* These are classes.  Use class= in the html tag to access */
+.subheading, .mainheading { color: #ff0000; }
+
+/* Links section 
+
+a       {       text-decoration: none; color: #3d3d3d; }
+a:hover {       text-decoration: underline; color: silver; }
+#content a { text-decoration: underline; color: #0000ff; }
+#content a:hover { text-decoration: none; color: #bbbbbb; }
+*/
+/*
+#content li { list-style-type:square; list-style-position:outside; margin-left: 18px; }
+*/
