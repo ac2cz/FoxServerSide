@@ -1,4 +1,4 @@
-leaderboard2.phphtml {
+html {
     overflow-y: scroll;
 }
 
@@ -44,37 +44,6 @@ p {
     margin-right: 0;
     line-height: 1.5;
  }
-
-h1 {
-font-size: 150%;
-color: #006633;
-font-weight: bold;
-margin-top: 6px;
-margin-bottom: 3px;
-} 
-h2 {
-font-size: 120%;
-color: #FF9900;
-font-weight: bold;
-margin-top: 6px;
-margin-bottom: 3px;
-} 
-
-h3 {
-font-size: 100%;
-color: #FF9900;
-font-weight: bold;
-margin-top: 6px;
-margin-bottom: 3px;
-} 
-
-h4 {
-font-size: 100%;
-color: #000000;
-font-weight: bold;
-margin-top: 6px;
-margin-bottom: 3px;
-} 
 
 /* This is the new DIV based approach */
 /* Here is the Header at the top of each page */
@@ -187,34 +156,6 @@ img     {
 }
 
 
-/*
- * THIS IS ALL LEGACY
- */
-
-/* # is for id tags.  use id= in the html tag to access this style */
-#content {
-"PADDING-RIGHT: 0.75pt; PADDING-LEFT: 5pt; PADDING-BOTTOM: 0.75pt; WIDTH: 64%; PADDING-TOP: 0.0pt" valign="top" width="64%
-font-size: 80%"
-}
-
-/* Table content is the main body of text on the site */
-.table-content {
-PADDING-RIGHT: 0.75pt; PADDING-LEFT: 5pt; PADDING-BOTTOM: 0.75pt; PADDING-TOP: 0.0pt; 
-vertical-align:top;
-font-size: 100%
-
- }
- 
-.table-content a { text-decoration: none; color: #0000ff; }
-.table-content a:hover { text-decoration: underline; color: #0000ff; }
-
-/*
-.table-content li { list-style-type:square; list-style-position:outside; margin-left: 18px; }
- */
- 
-/*  other styles */
-
-
 pre {
     tab-size: 4;
     white-space: pre-wrap;       /* Since CSS 2.1 */
@@ -225,14 +166,3 @@ pre {
 }
 /* These are classes.  Use class= in the html tag to access */
 .subheading, .mainheading { color: #ff0000; }
-
-/* Links section 
-
-a       {       text-decoration: none; color: #3d3d3d; }
-a:hover {       text-decoration: underline; color: silver; }
-#content a { text-decoration: underline; color: #0000ff; }
-#content a:hover { text-decoration: none; color: #bbbbbb; }
-*/
-/*
-#content li { list-style-type:square; list-style-position:outside; margin-left: 18px; }
-*/
