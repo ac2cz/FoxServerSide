@@ -23,8 +23,8 @@ body {
 
 /* Settings for desktop size display */
 @media only screen and (min-width: 768px) {
-    .col-1 { width: 20%; }
-    .col-2 { width: 75%; }   
+    .col-1 { width: 50%; }
+    .col-2 { width: 50%; }   
     .col-side-bar { width: 30%; }
     code { font-size: 0.9em; }
 }
