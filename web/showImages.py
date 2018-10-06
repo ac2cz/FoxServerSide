@@ -7,6 +7,7 @@ import sys
 import glob
 import os
 import urllib2
+import time
 
 
 def getFoxName(id):
@@ -51,6 +52,7 @@ table, th, td, tr {
     content=content+"<table>\n<tr>"
     for item in images:
         pic = os.path.basename(item)
+        fileSize = os.path.getsize(item)
         params = pic.split('_')
         reset=params[1]
         uptime=params[2]
@@ -62,9 +64,9 @@ table, th, td, tr {
         requestUrl1='http://127.0.0.1:8080/getSatUtcAtResetUptime?sat='+str(id)+'&reset='+str(reset)+'&uptime='+str(uptime)
         time = urllib2.urlopen(requestUrl1).read()
         title = "Pic: " + picId + " : " + reset + " / " + uptime + "<br>" + time 
-        name = item 
+        name = item + "?"+str(fileSize) 
         command = "showSubPage.php?id=" + str(id) + "&image=" + name + "&pc=" + picId + "&reset=" + reset + "&uptime=" + uptime + "&zoom=1&mapZoom=5"
-        content = content + "<a href="+command+">"+imgTag1 + webDir +"/"+pic + imgTag2 + title + imgTag3 + "</a>"
+        content = content + "<a href="+command+">"+imgTag1 +name + imgTag2 + title + imgTag3 + "</a>"
         content = content + "</td>\n"
         col=col+1
     content = content + "</tr>\n</table>\n"
