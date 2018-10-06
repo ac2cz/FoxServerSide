@@ -224,6 +224,7 @@ echo "</td></tr></table>";
 #<input type="text" value='.$callsign.' name="call"/>
 #<input type="submit" value="Show" name="add"/>
 
+$idLink = $id;
 if ($id==0 || $id == 3 || $id == 4) {
    echo "<br>";
    echo "<br>";
@@ -231,6 +232,7 @@ if ($id==0 || $id == 3 || $id == 4) {
    if ($id == 0) {
        echo "<h2>Latest Image from Fox-1D</h2>";
        $imageDir = "fox1d/images";
+       $idLink = 4;
    } else if ($id == 4) {
        echo "<h2>Latest Image from Fox-1D</h2>";
        $imageDir = "fox1d/images";
@@ -259,7 +261,7 @@ if ($id==0 || $id == 3 || $id == 4) {
    }
    #echo "<br>newest: ".$newest_file;
    if ($newest_file != "" && $newest_file != 'index.html') {
-       echo '<a href='.$imageDir.'><figure><img style="border:10px solid black;" src="'.$imageDir.'/'.$newest_file.'" alt="Image from spacecraft '.getName($id).'" /><figcaption>'.$newest_file.'</figcaption></figure></a>';
+       echo '<a href=showImages.php?id='.$idLink.'><figure><img style="border:10px solid black;" src="'.$imageDir.'/'.$newest_file.'" alt="Image from spacecraft '.getName($idLink).'" /><figcaption>'.$newest_file.'</figcaption></figure></a>';
    }
 }
 ?>
