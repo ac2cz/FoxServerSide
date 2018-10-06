@@ -145,7 +145,28 @@ table, th, td {
         die('Could not connect: ' . mysql_error());
     }
  
- 	echo "<div class='col-1'>"
+    # ROW SPAN needs to be at least 5x the number of spacecraft to display
+    #echo "<td rowspan=50 valign=top>";
+	
+    echo "<div class='col-2' style='float:right;'>";
+    if ($id=='0') {
+        latest(1, "");
+        latest(2, "");
+        latest(3, "fox1c/images");
+        latest(4, "fox1d/images");
+    } else {
+        if ($id == 3)
+            latest(3, "fox1c/images");
+        else if ($id == 4)
+            latest(4, "fox1d/images");
+        else
+            latest($id, "");
+    }
+    #echo "</td>";
+    #echo	"</tr>";
+    echo "</div>";
+	
+    echo "<div class='col-1'>";
     echo "<table cellspacing='0' cellpadding='0' width=1024 border='0'>";
 	
     echo "<tr><td><strong>Num</strong></td>".
@@ -185,27 +206,7 @@ table, th, td {
     }
     mysql_close($conn);
     echo "</table>";
-	
-	# ROW SPAN needs to be at least 5x the number of spacecraft to display
-    #echo "<td rowspan=50 valign=top>";
-	
-	echo "<div class='col-2' style='float:right;'>"
-    if ($id=='0') {
-        latest(1, "");
-        latest(2, "");
-        latest(3, "fox1c/images");
-        latest(4, "fox1d/images");
-    } else {
-        if ($id == 3)
-            latest(3, "fox1c/images");
-        else if ($id == 4)
-            latest(4, "fox1d/images");
-        else
-            latest($id, "");
-    }
-    #echo "</td>";
-    #echo	"</tr>";
-    echo "</div>
+    echo "</div>";
 	
 	
     $self=$_SERVER['PHP_SELF'];
