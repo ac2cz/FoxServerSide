@@ -26,6 +26,7 @@ table, th, td {
     border: 0px; 
 }
 </style>
+
 <?php
 
     function getName($n) {
@@ -46,41 +47,41 @@ table, th, td {
             echo "| <a href=showImages.php?id=$i>Camera Images</a>";
         echo " <br>";
 
-         # Now calculate the total for this sat and display it
-          $sql = "select (select count(*) from STP_HEADER where id=$i) as sumCountHeader;";
-          mysql_select_db($DB);
-          $retval = mysql_query( $sql, $conn );
-          if(! $retval ) {
-             die('Could not get data: ' . mysql_error());
-          }
+        # Now calculate the total for this sat and display it
+        $sql = "select (select count(*) from STP_HEADER where id=$i) as sumCountHeader;";
+        mysql_select_db($DB);
+        $retval = mysql_query( $sql, $conn );
+        if(! $retval ) {
+            die('Could not get data: ' . mysql_error());
+        }
    
-          $row1 = mysql_fetch_array($retval, MYSQL_ASSOC);
-          $headerCount=$row1['sumCountHeader'];
+        $row1 = mysql_fetch_array($retval, MYSQL_ASSOC);
+        $headerCount=$row1['sumCountHeader'];
 
-          $sql = "select (select total from STP_ARCHIVE_TOTALS where id=$i) as sumCountArchive;";
-          mysql_select_db($DB);
-          $retval = mysql_query( $sql, $conn );
-          if(! $retval ) {
-             die('Could not get data: ' . mysql_error());
-          }
+        $sql = "select (select total from STP_ARCHIVE_TOTALS where id=$i) as sumCountArchive;";
+        mysql_select_db($DB);
+        $retval = mysql_query( $sql, $conn );
+        if(! $retval ) {
+            die('Could not get data: ' . mysql_error());
+        }
    
-          $row2 = mysql_fetch_array($retval, MYSQL_ASSOC);
-          $archiveCount=$row2['sumCountArchive'];
-	  $totalCount=$headerCount+$archiveCount;
-          echo	"Frames: ".number_format($totalCount)." ";
+        $row2 = mysql_fetch_array($retval, MYSQL_ASSOC);
+        $archiveCount=$row2['sumCountArchive'];
+	    $totalCount=$headerCount+$archiveCount;
+        echo "Frames: ".number_format($totalCount)." ";
 
-       # Now get the frames in last 24 hours
+        # Now get the frames in last 24 hours
         $sql = "select count(*) from STP_HEADER where id=$i and timestampdiff(HOUR,date_time,now()) < 24;";
-          mysql_select_db($DB);
-          $retval = mysql_query( $sql, $conn );
-          if(! $retval ) {
-             die('Could not get data: ' . mysql_error());
-          }
+        mysql_select_db($DB);
+        $retval = mysql_query( $sql, $conn );
+        if(! $retval ) {
+            die('Could not get data: ' . mysql_error());
+        }
  
-          $row = mysql_fetch_array($retval, MYSQL_ASSOC);
-          echo "- last 24 hours: ".number_format($row['count(*)'])." ";
+        $row = mysql_fetch_array($retval, MYSQL_ASSOC);
+        echo "- last 24 hours: ".number_format($row['count(*)'])." ";
 
-       # Now the frames in last 90 mins
+        # Now the frames in last 90 mins
         $sql = "select count(*) from STP_HEADER where id=$i and timestampdiff(MINUTE,date_time,now()) < 90;";
         mysql_select_db($DB);
         $retval = mysql_query( $sql, $conn );
@@ -109,7 +110,6 @@ table, th, td {
          }
          echo "<br> ";
          echo "<br> ";
-
     }
 
     $dbhost = 'localhost:3036';
@@ -141,128 +141,125 @@ table, th, td {
     echo "<h1 class=entry-title>$name Telemetry Leaderboard</h1> ";
     $conn = mysql_connect($dbhost, $dbuser, $dbpass);
    
-   if(! $conn )
-   {
-      die('Could not connect: ' . mysql_error());
-   }
+    if(! $conn ) {
+        die('Could not connect: ' . mysql_error());
+    }
  
-   echo "<table cellspacing='0' cellpadding='0' width=1024 border='0'>";
-   echo "<tr><td><strong>Num</strong></td>".
+    echo "<table cellspacing='0' cellpadding='0' width=1024 border='0'>";
+    echo "<tr><td><strong>Num</strong></td>".
         "<td><strong>Ground station</strong></td>".
         "<td align='center'><strong>DUV Frames</strong></td>".
         "<td align='center'><strong>9k6 Frames</strong></td>".
         "<td align='center'><strong>Total</strong></td>".
         "<td align='center'><strong>Last 7 days</strong></td>";
-   # ROW SPAN needs to be at least 5x the number of spacecraft to display
-      echo "<td rowspan=50 valign=top>";
-   if ($id=='0') {
-      latest(1, "");
-      latest(2, "");
-      latest(3, "fox1c/images");
-      latest(4, "fox1d/images");
-   } else {
-      if ($id == 3)
-          latest(3, "fox1c/images");
-      else if ($id == 4)
-          latest(4, "fox1d/images");
-      else
-          latest($id, "");
-   }
-   echo "</td>";
-   echo	"</tr>";
+    # ROW SPAN needs to be at least 5x the number of spacecraft to display
+    echo "<td rowspan=50 valign=top>";
+    if ($id=='0') {
+        latest(1, "");
+        latest(2, "");
+        latest(3, "fox1c/images");
+        latest(4, "fox1d/images");
+    } else {
+        if ($id == 3)
+            latest(3, "fox1c/images");
+        else if ($id == 4)
+            latest(4, "fox1d/images");
+        else
+            latest($id, "");
+    }
+    echo "</td>";
+    echo	"</tr>";
 
-   if ($id==0) {
-       $sql = "call StpLeaderboardTotals()";
-   } else {
-       $sql = "call StpLeaderboardTotalsById($id)";
-   }
+    if ($id==0) {
+        $sql = "call StpLeaderboardTotals()";
+    } else {
+        $sql = "call StpLeaderboardTotalsById($id)";
+    }
 
-   mysql_select_db($DB);
-   $retval = mysql_query( $sql, $conn );
-   if(! $retval ) {
-      die('Could not get data: ' . mysql_error());
-   }
+    mysql_select_db($DB);
+    $retval = mysql_query( $sql, $conn );
+    if(! $retval ) {
+        die('Could not get data: ' . mysql_error());
+    }
    
-
-   if ($callsign == "" && !empty($_SESSION['user'])) {
-       $callsign=$_SESSION['user'];
-   }
-   $j=1;
-   while($row = mysql_fetch_array($retval, MYSQL_ASSOC) )
-   {
+    if ($callsign == "" && !empty($_SESSION['user'])) {
+        $callsign=$_SESSION['user'];
+    }
+    $j=1;
+    while($row = mysql_fetch_array($retval, MYSQL_ASSOC) ) {
         if ($j < $ROW_LIMIT || strcasecmp($row['receiver'], $callsign) == 0) {
             echo "<tr><td align='center'>$j</td> ".
             "<td><a href=ground_station.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td>  ".
-         "<td align='center'>".number_format($row['DUV'])."</td>".
-         "<td align='center'>".number_format($row['HighSpeed'])."</td> ".
-         "<td align='center'>".number_format($row['total'])."</td> ".
-         "<td align='center'>".number_format($row['last'])."</td> </tr> ";
+            "<td align='center'>".number_format($row['DUV'])."</td>".
+            "<td align='center'>".number_format($row['HighSpeed'])."</td> ".
+            "<td align='center'>".number_format($row['total'])."</td> ".
+            "<td align='center'>".number_format($row['last'])."</td> </tr> ";
         }
-         $j++;
-   }
-   mysql_close($conn);
-   echo "</table>";
-$self=$_SERVER['PHP_SELF'];
-echo "<table class='tlm_table'><tr><td class=tlm_td>";
-   if ($show == "")
-       echo "<a href=$self?id=$id&db=$DB&show=all>Show all ground stations</a>";
-   else
-       echo "<a href=$self?id=$id&db=$DB>Show short leaderboard</a>";
-echo "</td><td>";
-if ($id != 0)
-      echo " <a href=$self?id=0&db=FOXDB>| Show all spacecraft</a>";
-echo "</td><td>";
-$params="id=$id&db=$DB";
-$form = '<form action="'.$self.'?'.$params.'" method="post">
-| Include Ground station: 
-<input type="text" name="call"/>
-<input type="submit" value="Clear" name="clear"/>
-</form></td>';
-echo $form;
-echo "</td><td width=100>";
-echo "</td></tr></table>";
-#<input type="text" value='.$callsign.' name="call"/>
-#<input type="submit" value="Show" name="add"/>
+        $j++;
+    }
+    mysql_close($conn);
+    echo "</table>";
+    $self=$_SERVER['PHP_SELF'];
+    echo "<table class='tlm_table'><tr><td class=tlm_td>";
+    if ($show == "")
+        echo "<a href=$self?id=$id&db=$DB&show=all>Show all ground stations</a>";
+    else
+        echo "<a href=$self?id=$id&db=$DB>Show short leaderboard</a>";
+    echo "</td><td>";
+    if ($id != 0)
+        echo " <a href=$self?id=0&db=FOXDB>| Show all spacecraft</a>";
+    echo "</td><td>";
+    $params="id=$id&db=$DB";
+    $form = '<form action="'.$self.'?'.$params.'" method="post">
+    | Include Ground station: 
+    <input type="text" name="call"/>
+    <input type="submit" value="Clear" name="clear"/>
+    </form></td>';
+    echo $form;
+    echo "</td><td width=100>";
+    echo "</td></tr></table>";
+    #<input type="text" value='.$callsign.' name="call"/>
+    #<input type="submit" value="Show" name="add"/>
 
-$idLink = $id;
-if ($id==0 || $id == 3 || $id == 4) {
-   echo "<br>";
-   echo "<br>";
-   echo "<table border=0><tr><td>";
-   if ($id == 0) {
-       echo "<h2>Latest Image from Fox-1D</h2>";
-       $imageDir = "fox1d/images";
-       $idLink = 4;
-   } else if ($id == 4) {
-       echo "<h2>Latest Image from Fox-1D</h2>";
-       $imageDir = "fox1d/images";
-   } else {
-       echo "<h2>Latest Image</h2>";
-       $imageDir = "fox1c/images";
-   }
-   echo "</td><td width=50>";
-   echo "</td><td><h2>FoxTelem</h2></td></tr>";
-   echo "<td width=400 rowspan=50 valign=top>";
-   #$files = scandir('/srv/www/www.amsat.org/public_html/tlm/fox1d/images', SCANDIR_SORT_DESCENDING);
-   $files = glob("/srv/www/www.amsat.org/public_html/tlm/".$imageDir."/*.jpg");
-   usort($files, function($a, $b){
-       return filemtime($a) < filemtime($b);
-   });
+    $idLink = $id;
+    if ($id==0 || $id == 3 || $id == 4) {
+    echo "<br>";
+    echo "<br>";
+    echo "<table border=0><tr><td>";
+    if ($id == 0) {
+        echo "<h2>Latest Image from Fox-1D</h2>";
+        $imageDir = "fox1d/images";
+        $idLink = 4;
+    } else if ($id == 4) {
+        echo "<h2>Latest Image from Fox-1D</h2>";
+        $imageDir = "fox1d/images";
+    } else {
+        echo "<h2>Latest Image</h2>";
+        $imageDir = "fox1c/images";
+    }
+    echo "</td><td width=50>";
+    echo "</td><td><h2>FoxTelem</h2></td></tr>";
+    echo "<td width=400 rowspan=50 valign=top>";
+    #$files = scandir('/srv/www/www.amsat.org/public_html/tlm/fox1d/images', SCANDIR_SORT_DESCENDING);
+    $files = glob("/srv/www/www.amsat.org/public_html/tlm/".$imageDir."/*.jpg");
+    usort($files, function($a, $b){
+        return filemtime($a) < filemtime($b);
+    });
 
-   $found = FALSE;
-   foreach ($files as $filePath) {
+    $found = FALSE;
+    foreach ($files as $filePath) {
         $file = basename($filePath);
    	#echo "<br>file: ".$file;
         if (!$found && $file != "" && substr( $file, 0, 5 ) != 'index') {
-   	    #echo " found!: ".$file;
+   	        #echo " found!: ".$file;
             $found = TRUE;
-   	    $newest_file = $file;
+   	        $newest_file = $file;
         }
-   }
-   #echo "<br>newest: ".$newest_file;
-   if ($newest_file != "" && $newest_file != 'index.html') {
-       echo '<a href=showImages.php?id='.$idLink.'><figure><img style="border:10px solid black;" src="'.$imageDir.'/'.$newest_file.'" alt="Image from spacecraft '.getName($idLink).'" /><figcaption>'.$newest_file.'</figcaption></figure></a>';
-   }
+    }
+    #echo "<br>newest: ".$newest_file;
+    if ($newest_file != "" && $newest_file != 'index.html') {
+        echo '<a href=showImages.php?id='.$idLink.'><figure><img style="border:10px solid black;" src="'.$imageDir.'/'.$newest_file.'" alt="Image from spacecraft '.getName($idLink).'" /><figcaption>'.$newest_file.'</figcaption></figure></a>';
+    }
 }
 ?>
 
