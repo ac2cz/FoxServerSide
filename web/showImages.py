@@ -19,19 +19,11 @@ def processPage(id, prevPage, nextPage, images, webDir):
     col=0
     content="<html><head><title>Virginia Tech Camera Images from Spacecraft "
     content=content + getFoxName(id)+"</title>"
+    with open('head.php', 'r') as f:
+        head = f.readlines()
+    for line in head:
+        content=content+line
     content=content+"""
-<link rel='stylesheet' type='text/css'
-media="all" href="/wordpress/wp-content/themes/generatepress/style.css" >
-    <style>
-table, th, td, tr {
-    border : none;
-    border-collapse: collapse;
-}
-
-</style>
-    <table>
-    <tr>
-    <td>
     </head>
     <body>
     <img src='http://www.amsat.org/wordpress/wp-content/uploads/2014/08/amsat2.png'> """
@@ -49,7 +41,7 @@ table, th, td, tr {
     imgTag2='"alt="Image from spacecraft '+getFoxName(id)+'" /><figcaption>'
     imgTag3='</figcaption></figure>'
 
-    content=content+"<table>\n<tr>"
+    content=content+"<div>\n<div>"
     for item in images:
         pic = os.path.basename(item)
         fileSize = os.path.getsize(item)
@@ -58,18 +50,18 @@ table, th, td, tr {
         uptime=params[2]
         picId=params[3].split('.')[0]
         if (col % TABLE_COLS == 0):
-            content = content + "</tr><tr>"
+            content = content + "</div><div>"
             col=0;
-        content = content + "<td>"
+        content = content + "<div class='col-30-1' style='float:left;'>"
         requestUrl1='http://127.0.0.1:8080/getSatUtcAtResetUptime?sat='+str(id)+'&reset='+str(reset)+'&uptime='+str(uptime)
         time = urllib2.urlopen(requestUrl1).read()
         title = "Pic: " + picId + " : " + reset + " / " + uptime + "<br>" + time 
         name = item + "?"+str(fileSize) 
         command = "showSubPage.php?id=" + str(id) + "&image=" + name + "&pc=" + picId + "&reset=" + reset + "&uptime=" + uptime + "&zoom=1&mapZoom=5"
         content = content + "<a href="+command+">"+imgTag1 +name + imgTag2 + title + imgTag3 + "</a>"
-        content = content + "</td>\n"
+        content = content + "</div>\n"
         col=col+1
-    content = content + "</tr>\n</table>\n"
+    content = content + "</div>\n<div style='clear:both;'>\n"
     if (prevPage != ""):
         content=content+"<a href=showImages.php?id="+id+"&start=" + prevPage + "&reverse=reverse> &lt; Newer Images</a> |"
     else:
@@ -79,7 +71,7 @@ table, th, td, tr {
     else:
         content=content +"Older Images &gt;<br>\n"
 
-    content = content + "</body></html>"
+    content = content + "</div></body></html>"
 
     return content
 

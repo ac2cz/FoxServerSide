@@ -30,21 +30,16 @@ def makeImagePage(id, pic, picId, reset, uptime, zoom, mapZoom):
 
     content="<html><head><title>Virginia Tech Camera Images from Spacecraft "
     content=content + getFoxName(id)+"</title>"
+    with open('head.php', 'r') as f:
+        head = f.readlines()
+    for line in head:
+        content=content+line
+
     content=content+"""
-    <link rel="stylesheet" type="text/css" media="all" href="/wordpress/wp-content/themes/generatepress/style.css" >
     <style>
     table, th, td, tr {
     border : none;
     border-collapse: collapse;
-    }
-
-    pre {
-    tab-size: 4;
-    white-space: pre-wrap;       /* Since CSS 2.1 */
-    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-    white-space: -pre-wrap;      /* Opera 4-6 */
-    white-space: -o-pre-wrap;    /* Opera 7 */
-    word-wrap: break-word;       /* Internet Explorer 5.5+ */
     }
     </style>
     </head>
@@ -52,9 +47,7 @@ def makeImagePage(id, pic, picId, reset, uptime, zoom, mapZoom):
     <img src='http://www.amsat.org/wordpress/wp-content/uploads/2014/08/amsat2.png'> """
     content=content+"<h2 class=entry-title>Virginia Tech Camera Image: "+title+ " from Spacecraft " + getFoxName(id) + "</h2>"
     content=content+"""
-    <table>
-    <tr>
-    <td>
+    <div>
 """
     height = 480
     width = 640
@@ -63,7 +56,7 @@ def makeImagePage(id, pic, picId, reset, uptime, zoom, mapZoom):
     with open('api_key', 'r') as f:
         apiKey = f.readline().strip()
     command = "showSubPage.php?id=" + str(id) + "&image=" + pic + "&pc=" + picId + "&reset=" + reset + "&uptime=" + uptime + "&mapZoom="+str(mapZoom)
-    content = content + "<div style='position:relative; z-index: 1000;'><a href=showImages.php?id=" + id+ ">Back to Index</a> | "
+    content = content + "<div class='col-1;' style='float:left; z-index: 1000;'><br><a href=showImages.php?id=" + id+ ">Back to Index</a> | "
     if (zoom > 1):
         content = content + "<a href=" + command+ "&zoom="+str(zoom/2) + ">Smaller</a> | "
     else:
@@ -72,38 +65,41 @@ def makeImagePage(id, pic, picId, reset, uptime, zoom, mapZoom):
         content = content + "<a href=" + command+ "&zoom="+str(zoom*2) + ">Larger</a>"
     else:
         content = content + "Larger"
-    imgTag1='<figure><img style="border:10px solid black;" width='+str(width)+' height='+str(height)+ ' src="'
+    imgTag1='<img style="border:10px solid black;" src="'
     imgTag2='"alt="Image from spacecraft '+getFoxName(id)+'" /><figcaption>'
-    imgTag3='</figcaption></figure>'
+    imgTag3='</figcaption>>'
     content = content + "<p>"
     content = content + "<a href=" + command + "&zoom="+str(zoom*2) + ">"
     content = content + imgTag1 + pic + imgTag2 + title
     content = content + "</a>"
     selfUrl = "/tlm/showSubPage.php?id=" + str(id) + "&image=" + pic + "&pc=" + picId + "&reset=" + reset + "&uptime=" + uptime + "&zoom="+str(zoom) + "&mapZoom="+str(mapZoom)
 
-    content = content + "</div></td><td><div style='text-align:center;'>Spacecraft sub-point at image aquisition: "+str(lat) + ", " + str(lon) + "<br>"
+    content = content + "</div>"
+    content = content + "<div class='col-2;' style='float:right;' text-align:center;'><div>Spacecraft sub-point at image aquisition: "+str(lat) + ", " + str(lon) + "<br>"
     commandTime = "showSubPage.php?id=" + str(id) + "&image=" + pic + "&pc=" + picId + "&zoom="+str(zoom)+ "&mapZoom="+str(mapZoom)
     commandMap = "showSubPage.php?id=" + str(id) + "&image=" + pic + "&pc=" + picId + "&reset=" + reset + "&uptime=" + uptime +  "&zoom="+str(zoom)
     content = content + "Push uptime <a href=" + commandTime+  "&reset=" + reset + "&uptime=" + str(int(uptime) - 10) +">10 Sec Earlier</a> | "
     content = content + "<a href=" + commandTime+  "&reset=" + reset + "&uptime=" + str(int(uptime) + 10) +">10 Sec Later</a> | "
     content = content + "<a href=" + commandMap+ "&mapZoom="+str(mapZoom+1) + ">Zoom In</a> | "
-    content = content + "<a href=" + commandMap+ "&mapZoom="+str(mapZoom-1) + ">Zoom Out</a><p> "
-    content = content + "<a href=" + commandMap + "&mapZoom="+str(mapZoom+1) + ">"
-    content = content + '<img style="border:30px solid white;" src="https://maps.googleapis.com/maps/api/staticmap?'
+    content = content + "<a href=" + commandMap+ "&mapZoom="+str(mapZoom-1) + ">Zoom Out</a>"
+    content = content + "<a href=" + commandMap + "&mapZoom="+str(mapZoom+1) + "></div>"
+    content = content + '<img style="border:15px solid white;" src="https://maps.googleapis.com/maps/api/staticmap?'
     content = content + "zoom=" + str(mapZoom) + "&size=640x500&maptype=terrain"
     content = content + "&markers=color:red%7Clabel:X%7C"+str(lat)+","+str(lon)
     content = content + '&key='+apiKey+'">'
     content = content + "</a>"
     content = content + """
-</div></td></tr>
-<tr>
-</table>
+</div>
+</div>
 """
     content = content + """
-<b>Enter Comments Here:</b>
-<form method="post" action="/tlm/Comment.php">
+<div style='clear:both;'>
 <table>
 <tr>
+<br>
+<b>Enter Comments Here:</b>
+<br>
+<form method="post" action="/tlm/Comment.php">
 <td colspan="2">
 <textarea rows="3" cols="80" wrap="physical" name="comments"></textarea>
 """
@@ -127,8 +123,10 @@ The third planet from the sun is called what?
 </tr>
 </table>
 </form>
+</div>
 <h2>Comments on this Image </h2>
-<table width="800" cellspacing=20>
+<div style='clear:both;'>
+<table>
 """
     if (os.path.isfile(pic+'.comments.html')): 
         with open(pic+'.comments.html', 'r') as f:
@@ -138,7 +136,7 @@ The third planet from the sun is called what?
     else:
         content = content + "No Comments So Far"
 
-    content = content + "</table></body></html>"
+    content = content + "</table></div></div></body></html>"
     return content;
 
 
