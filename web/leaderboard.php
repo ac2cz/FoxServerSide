@@ -105,7 +105,7 @@ table, th, td {
             $stations = $stations + 1;
             if ($stations == 7) {
                 $stations=0;
-                echo "<br>";
+                #echo "<br>";
             }
          }
          echo "<br> ";
@@ -148,7 +148,7 @@ table, th, td {
     # ROW SPAN needs to be at least 5x the number of spacecraft to display
     #echo "<td rowspan=50 valign=top>";
 	
-    echo "<div class='col-2' style='float:right;'>";
+    echo "<div class='col-2 latest-stats' style='float:right;'>";
     if ($id=='0') {
         latest(1, "");
         latest(2, "");
@@ -234,7 +234,7 @@ table, th, td {
 
     $idLink = $id;
     if ($id==0 || $id == 3 || $id == 4) {
-    echo "<div class='col-1 clear-right'><br>";
+    echo "<div class='col-1 clear-both'><br>";
     echo "<br>";
     if ($id == 0) {
         echo "<h2>Latest Image from Fox-1D</h2>";

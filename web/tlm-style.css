@@ -46,13 +46,7 @@ p {
  }
 
  .latest-stats {
-    PADDING-RIGHT: 0.75pt;
-    PADDING-LEFT: 5pt; 
-    PADDING-BOTTOM: 0.75pt;  
-    PADDING-TOP: 0.0pt; 
-    valign: top;
-    font-size: 90%;
-    line-height: 1.0;
+    line-height: 1.1;
 }
  
 /* This is the new DIV based approach */
