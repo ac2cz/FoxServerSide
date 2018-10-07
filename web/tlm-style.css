@@ -16,7 +16,10 @@ body {
 
 /* mobile settings first */
     .col-1 { width: 100%; }
-    .col-2 { width: 100%; }  
+    .col-2 { width: 100%; }
+    .col-30A { width: 100%; }
+    .col-30B { width: 100%; }    
+    .col-30C { width: 100%; }    
     .col-side-bar { width: 100%; } 
     code { font-size: 0.75em; }
 
@@ -24,7 +27,10 @@ body {
 /* Settings for desktop size display */
 @media only screen and (min-width: 768px) {
     .col-1 { width: 50%; }
-    .col-2 { width: 50%; }   
+    .col-2 { width: 50%; }
+    .col-30A { width: 30%; }
+    .col-30B { width: 30%; }    
+    .col-30C { width: 30%; }    
     .col-side-bar { width: 30%; }
     code { font-size: 0.9em; }
 }
