@@ -114,6 +114,10 @@ p {
     clear: right;
 }
 
+.clear-both {
+    clear: both;
+}
+
 img     {
     border: 0px;
     margin-top: 6px;
