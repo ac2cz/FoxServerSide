@@ -45,6 +45,16 @@ p {
     line-height: 1.5;
  }
 
+ .latest-stats {
+    PADDING-RIGHT: 0.75pt;
+    PADDING-LEFT: 5pt; 
+    PADDING-BOTTOM: 0.75pt;  
+    PADDING-TOP: 0.0pt; 
+    valign: top;
+    font-size: 90%;
+    line-height: 1.0;
+}
+ 
 /* This is the new DIV based approach */
 /* Here is the Header at the top of each page */
 .header {
