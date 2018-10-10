@@ -49,8 +49,8 @@ def makeImagePage(id, pic, picId, reset, uptime, zoom, mapZoom):
     content=content+"""
     <div>
 """
-    height = 480
-    width = 640
+    height = 240
+    width = 420
     height = height * zoom
     width = width * zoom
     with open('api_key', 'r') as f:
@@ -65,7 +65,7 @@ def makeImagePage(id, pic, picId, reset, uptime, zoom, mapZoom):
         content = content + "<a href=" + command+ "&zoom="+str(zoom*2) + ">Larger</a>"
     else:
         content = content + "Larger"
-    imgTag1='<img style="border:10px solid black;" src="'
+    imgTag1='<img style="border:10px solid black;" height='+str(height)+' width='+str(width)+' src="'
     imgTag2='"alt="Image from spacecraft '+getFoxName(id)+'" /><figcaption>'
     imgTag3='</figcaption>>'
     content = content + "<p>"
@@ -103,7 +103,8 @@ def makeImagePage(id, pic, picId, reset, uptime, zoom, mapZoom):
 <td colspan="2">
 <textarea rows="3" cols="80" wrap="physical" name="comments"></textarea>
 """
-    content = content + '<input type="hidden" name="file" value="' + pic + '" /><br>'
+    baseImage = pic.split('?')
+    content = content + '<input type="hidden" name="file" value="' + baseImage[0] + '" /><br>'
     content = content + '<input type="hidden" name="url" value="' + selfUrl + '" /><br>'
     content = content + """
 <tr valign=top>
@@ -128,8 +129,8 @@ The third planet from the sun is called what?
 <div style='clear:both;'>
 <table>
 """
-    if (os.path.isfile(pic+'.comments.html')): 
-        with open(pic+'.comments.html', 'r') as f:
+    if (os.path.isfile(baseImage[0]+'.comments.html')): 
+        with open(baseImage[0]+'.comments.html', 'r') as f:
             lines = f.readlines()
         for line in lines:
             content = content + line 
