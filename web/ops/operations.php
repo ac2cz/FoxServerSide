@@ -32,15 +32,15 @@ Logged in as: <?php echo htmlentities($_SESSION['user']['username'], ENT_QUOTES,
 <h2>FOX-1A Maintenance</h2>
 <a href="show_t0id.php?id=1">Calculate Time Zero for a Reset</a><br /> 
 <a href="edit_t0id.php?id=1">Edit Time Zero Resets File</a><br /> 
-<br>
 <h2>FOX-1B Maintenance</h2>
 <a href="show_t0id.php?id=2">Calculate Time Zero for a Reset</a><br /> 
 <a href="edit_t0id.php?id=2">Edit Time Zero Resets File</a><br /> 
-<br>
+<h2>FOX-1C Maintenance</h2>
+<a href="show_t0id.php?id=3">Calculate Time Zero for a Reset</a><br /> 
+<a href="edit_t0id.php?id=3">Edit Time Zero Resets File</a><br /> 
 <h2>FOX-1D Maintenance</h2>
 <a href="show_t0id.php?id=4">Calculate Time Zero for a Reset</a><br /> 
 <a href="edit_t0id.php?id=4">Edit Time Zero Resets File</a><br /> 
-<br>
 <h2>Admin</h2>
 <a href="memberlist.php">Ops Team</a><br /> 
 <?php

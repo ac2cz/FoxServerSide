@@ -28,6 +28,7 @@ def processPage(id, prevPage, nextPage, images, webDir):
     <body>
     <img src='http://www.amsat.org/wordpress/wp-content/uploads/2014/08/amsat2.png'> """
     content=content+"<h1 class=entry-title>Virginia Tech Camera Images from Spacecraft " + getFoxName(id) + "</h1>"
+    content=content+"<a href=/tlm>Back to Leaderboard</a> | "
     if (prevPage != ""):
         content=content+"<a href=showImages.php?id="+id+"&start=" + prevPage + "&reverse=reverse> &lt; Newer Images</a> |"
     else:

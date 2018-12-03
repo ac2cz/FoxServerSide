@@ -27,7 +27,6 @@ if ($id == "") { $id = "1"; }
 $name=getName($id);
 ?>
 
-<?php include "header.php"; ?>
 <html>
 <head>
 <title><?php echo $name?> Time 0 for Resets</title>
@@ -35,7 +34,7 @@ $name=getName($id);
 <body>
 <?php include "header.php"; ?>
 <h1 class="entry-title">Time Zero for Resets on <?php echo $name?></h1>
-This is the FOX1T0 file that FoxTelem downloads when it starts.  Add new rows to the end of the file when
+This is the T0 file that FoxTelem downloads when it starts.  Add new rows to the end of the file when
 the spacecraft experiences a reset.  The format is <i> reset, T0 in milliseconds</i>
 <p>
 First <a href=show_t0id.php?id=<?php echo $id?>>calculate the value for T0</a> then enter it as a new row at the end of the file. Save the file so it is available to FoxTelem.  It is written into the same directory as this php script.
