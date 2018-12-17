@@ -81,8 +81,37 @@ Save the calcualted value and enter it into the <a href=edit_t0id.php?id=<?php e
       echo "<strong>For reset: $arg1 at Groundstation: $arg2</strong><br>";
       $a = file_get_contents("http://localhost:8080/T0/$id/$arg1/$arg2/$arg3");
       echo ($a);
+   } else if ($arg1 <> "" ) {
+      $limit = $arg3;
+      if ($limit == "" || $limit > 100) {
+          $limit = 100;
+      }
+      echo "<strong>Ground stations that submitted records for Reset $arg1 (limit $limit)</strong><br><br><table>";
+      $dbhost = 'localhost:3036';
+      $dbuser = 'foxrpt';
+      $dbpass = 'amsatfox';
+      $DB = 'FOXDB';
+      $conn = mysql_connect($dbhost, $dbuser, $dbpass);
+      mysql_select_db($DB);
+
+      if(! $conn ) { die('Could not connect: ' . mysql_error()); }
+
+      $sql = "select resets, uptime, receiver from STP_HEADER where id=$id and resets=$arg1 order by uptime limit $limit;";
+        mysql_select_db($DB);
+        $retval = mysql_query( $sql, $conn );
+        if(! $retval ) {
+            die('Could not get data: ' . mysql_error());
+        }
+        echo "<tr><td><b>Resets</b></td><td><b>Uptime</b></td><td><b>Receiver</b></td></tr> ";
+        while($row = mysql_fetch_array($retval, MYSQL_ASSOC)) {
+            echo "<tr><td>{$row['resets']}</td><td> {$row['uptime']}</td><td> <a href=show_t0id.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td></tr> ";
+
+        }
+        mysql_close($conn);
+
    } else {
       echo "<strong>You need to specify a reset and receiver (ground station name)</strong><br>"; 
+      echo "<strong>Enter just a reset to get a list of the receivers that submitted data</strong><br>"; 
    }
 ?>
 
