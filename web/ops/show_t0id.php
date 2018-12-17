@@ -107,6 +107,7 @@ Save the calcualted value and enter it into the <a href=edit_t0id.php?id=<?php e
             echo "<tr><td>{$row['resets']}</td><td> {$row['uptime']}</td><td> <a href=show_t0id.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td></tr> ";
 
         }
+        echo"</table>";
         mysql_close($conn);
 
    } else {
