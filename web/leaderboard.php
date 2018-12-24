@@ -18,6 +18,7 @@ if($_POST["clear"]) {
 ?>
 <title>Fox Server Leaderboard</title>
 <?php include "head.php"; ?>
+<?php include "getName.php"; ?>
 </head>
 <body>
 <img src='http://www.amsat.org/wordpress/wp-content/uploads/2014/08/amsat2.png'>
@@ -28,15 +29,6 @@ table, th, td {
 </style>
 
 <?php
-
-    function getName($n) {
-        if ($n == 1) return "AO-85 (Fox-1A)";
-        if ($n == 2) return "AO-91 (RadFxSat)";
-        if ($n == 3) return "Fox-1Cliff";
-        if ($n == 4) return "AO-92 (Fox-1D)";
-        if ($n == 5) return "Fox-1E (RadFxSat2)";
-        return "FOX"; 
-    }
 
     function latest($i, $imageDir) {
         global $DB, $conn, $PORT;
@@ -229,49 +221,13 @@ table, th, td {
     echo "</td><td width=100>";
     echo "</td></tr></table>";
     echo "</div>";
+    echo "<div style='clear:both;'></div>";
     #<input type="text" value='.$callsign.' name="call"/>
     #<input type="submit" value="Show" name="add"/>
 
-    $idLink = $id;
-    if ($id==0 || $id == 3 || $id == 4) {
-    echo "<div class='col-1 clear-both'><br>";
-    echo "<br>";
-    if ($id == 0) {
-        echo "<h2>Latest Image from Fox-1D</h2>";
-        $imageDir = "fox1d/images";
-        $idLink = 4;
-    } else if ($id == 4) {
-        echo "<h2>Latest Image from Fox-1D</h2>";
-        $imageDir = "fox1d/images";
-    } else {
-        echo "<h2>Latest Image</h2>";
-        $imageDir = "fox1c/images";
-    }
-    #$files = scandir('/srv/www/www.amsat.org/public_html/tlm/fox1d/images', SCANDIR_SORT_DESCENDING);
-    $files = glob("/srv/www/www.amsat.org/public_html/tlm/".$imageDir."/*.jpg");
-    usort($files, function($a, $b){
-        return filemtime($a) < filemtime($b);
-    });
-
-    $found = FALSE;
-    foreach ($files as $filePath) {
-        $file = basename($filePath);
-   	#echo "<br>file: ".$file;
-        if (!$found && $file != "" && substr( $file, 0, 5 ) != 'index') {
-   	        #echo " found!: ".$file;
-            $found = TRUE;
-   	        $newest_file = $file;
-        }
-    }
-    #echo "<br>newest: ".$newest_file;
-    if ($newest_file != "" && $newest_file != 'index.html') {
-        echo '<a href=showImages.php?id='.$idLink.'><figure><img style="border:10px solid black;" src="'.$imageDir.'/'.$newest_file.'" alt="Image from spacecraft '.getName($idLink).'" /><figcaption>'.$newest_file.'</figcaption></figure></a>';
-    }
-}
 ?>
 
-</div>
-<div class='col-2'>
+<div class='col-2' style='float:right;'>
 <h2>FoxTelem</h2>
 <p>
 <a href=http://www.g0kla.com/foxtelem/index.php>FoxTelem</a> is the program you use to decode the data transmissions from the AMSAT Fox-1 series of spacecraft.
@@ -298,6 +254,45 @@ FoxTelem comes with a manual which you can find from the Help menu.  It covers t
 <br>
 <a href=http://www.g0kla.com/sdr/index.php>How to write a Software Defined Radio - SDR and DSP Tutorial</a>
 <br>
+</div>
+<?php
+    $idLink = $id;
+    if ($id==0 || $id == 3 || $id == 4) {
+    echo "<div class='col-1'>";
+    if ($id == 0) {
+        echo "<h2>Notable Image from Fox-1D</h2>";
+        $imageDir = "fox1d/images";
+        $idLink = 4;
+    } else if ($id == 4) {
+        echo "<h2>Notable Image from Fox-1D</h2>";
+        $imageDir = "fox1d/images";
+    } else {
+        echo "<h2>Notable Image</h2>";
+        $imageDir = "fox1c/images";
+    }
+    #$files = scandir('/srv/www/www.amsat.org/public_html/tlm/fox1d/images', SCANDIR_SORT_DESCENDING);
+    $files = glob("/srv/www/www.amsat.org/public_html/tlm/".$imageDir."/*.jpg.comments.html");
+    usort($files, function($a, $b){
+        return filemtime($a) < filemtime($b);
+    });
+
+    $found = FALSE;
+    foreach ($files as $filePath) {
+        $file = basename($filePath);
+        $file = str_replace(".comments.html", "", $file);
+   	#echo "<br>file: ".$file;
+        if (!$found && $file != "" && substr( $file, 0, 5 ) != 'index') {
+   	        #echo " found!: ".$file;
+            $found = TRUE;
+   	        $newest_file = $file;
+        }
+    }
+    #echo "<br>newest: ".$newest_file;
+    if ($newest_file != "" && $newest_file != 'index.html') {
+        echo '<a href=showImages.php?id='.$idLink.'&start='.$newest_file.'><figure><img style="border:10px solid black;" src="'.$imageDir.'/'.$newest_file.'" alt="Image from spacecraft '.getName($idLink).'" /><figcaption>'.$newest_file.'</figcaption></figure></a>';
+    }
+}
+?>
 </div>
 </body>
 </html>
