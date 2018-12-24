@@ -1,0 +1,36 @@
+#!/bin/bash
+
+logfile=~/FoxServer/server_running.log
+MONTH=`date +%m`
+YEAR=`date +%Y`
+# This is reliable on the first day of a month, but not on the last day or two
+PREV_MONTH=`date +%m -d 'last month'`
+#PREV_MONTH=10
+DIR=/home/tlmmgr/FoxServer/`date +%Y/`
+ARCHIVE_FILE=STP.${YEAR}.${PREV_MONTH}.tar
+cd $DIR
+if [ -d $PREV_MONTH ]
+then
+    echo "Archiving Prev Month : $PREV_MONTH to $ARCHIVE_FILE"
+    tar -cf $ARCHIVE_FILE --remove-files ${PREV_MONTH}
+
+    if [ $? -eq 0 ]
+    then
+        gzip $ARCHIVE_FILE
+        echo "Done .... ${ARCHIVE_FILE}.gz"
+    else
+        echo "ERROR creating $PREV_MONTH archive file"
+        exit 1
+    fi
+
+else
+    if [ -f ${ARCHIVE_FILE}.gz ]
+    then
+        echo "Prev Month $PREV_MONTH is already archived"
+    else
+        echo "Prev Month $PREV_MONTH is MISSING!"
+        exit 1
+    fi
+fi
+
+exit 0
