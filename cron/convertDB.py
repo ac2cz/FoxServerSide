@@ -10,6 +10,11 @@ import errno
 MAX_SEGMENT_SIZE = 1000;
 DB="FOXDB";
 dir=".";
+
+# Given a FoxId and a type string process the file and split it into segments
+# We open the logfile and an index file
+# Records are read from the file and saved to a segment file until it is full or 
+# we have a new reset
 def processLog(sat, logFile): 	
     "This processes a log file and splits it into SegDb segments"
     linesAdded = 0;
@@ -17,7 +22,8 @@ def processLog(sat, logFile):
         idx = open(DB+os.sep+sat+logFile+".idx", "w")
         for line in f:
 	    fields = line.split(',')
-            if linesAdded == MAX_SEGMENT_SIZE:
+            if (linesAdded > 0) and ((fields[2] != segReset) or (linesAdded == MAX_SEGMENT_SIZE)):
+                # Time to create a new segment.  New reset hit or segment is full
                 idx.write(str(segReset)+","+str(segUptime)+","+str(linesAdded)+","+str(segFilename)+"\n")
                 linesAdded = 0
                 seg.close()
@@ -34,6 +40,9 @@ def processLog(sat, logFile):
         idx.close()
         f.close()
 
+# Given a string that matches a logfile type, get a list of all the files in the directory that match
+# This is probablly only 1 file for the extract from the server
+# We extract the Fox Id and the Type from the filename then process it 
 def processType(match):
     logs = glob.glob(dir + os.sep + match)
     if len(logs) == 0:
@@ -72,6 +81,3 @@ processType("*maxtelemetry.log")
 processType("*mintelemetry.log")
 processType("*radtelemetry.log")
 processType("*radtelemetry2.log")
-processType("*herciHSdata.log")
-processType("*herciHSheader.log")
-processType("*herciHSpackets.log")
