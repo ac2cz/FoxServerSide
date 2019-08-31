@@ -53,7 +53,7 @@ def makeImagePage(id, pic, picId, reset, uptime, zoom, mapZoom):
     width = 420
     height = height * zoom
     width = width * zoom
-    with open('api_key', 'r') as f:
+    with open('/home/tlmmgr/.api_key', 'r') as f:
         apiKey = f.readline().strip()
     command = "showSubPage.php?id=" + str(id) + "&image=" + pic + "&pc=" + picId + "&reset=" + reset + "&uptime=" + uptime + "&mapZoom="+str(mapZoom)
     content = content + "<div class='col-1;' style='float:left; z-index: 1000;'><br><a href=showImages.php?id=" + id+ ">Back to Index</a> | "
