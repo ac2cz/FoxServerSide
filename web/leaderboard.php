@@ -30,6 +30,8 @@ table, th, td {
 
 <?php
 
+    # This function is run for each sat we want to display totals for
+    # The results sit in the right hand column
     function latest($i, $imageDir) {
         global $DB, $conn, $PORT;
         $name=getName($i);
@@ -41,70 +43,78 @@ table, th, td {
 
         # Now calculate the total for this sat and display it
         $sql = "select (select count(*) from STP_HEADER where id=$i) as sumCountHeader;";
-        mysql_select_db($DB);
-        $retval = mysql_query( $sql, $conn );
-        if(! $retval ) {
-            die('Could not get data: ' . mysql_error());
+        if ($result = mysqli_query($conn, $sql )) {
+            $row1 = mysqli_fetch_assoc($result);
+        } else {
+            die('Could not get data: ');
+            #die('Could not get data: ' . mysqli_error($conn));
         }
-   
-        $row1 = mysql_fetch_array($retval, MYSQL_ASSOC);
         $headerCount=$row1['sumCountHeader'];
+        mysqli_free_result($result);
 
         $sql = "select (select total from STP_ARCHIVE_TOTALS where id=$i) as sumCountArchive;";
-        mysql_select_db($DB);
-        $retval = mysql_query( $sql, $conn );
-        if(! $retval ) {
-            die('Could not get data: ' . mysql_error());
+        if ($result = mysqli_query($conn, $sql )) {
+            $row2 = mysqli_fetch_assoc($result);
+        } else {
+            die('Could not get data: ');
+            #die('Could not get data: ' . mysqli_error($conn));
         }
-   
-        $row2 = mysql_fetch_array($retval, MYSQL_ASSOC);
         $archiveCount=$row2['sumCountArchive'];
-	    $totalCount=$headerCount+$archiveCount;
+	$totalCount=$headerCount+$archiveCount;
+
         echo "Frames: ".number_format($totalCount)." ";
+        mysqli_free_result($result);
 
         # Now get the frames in last 24 hours
         $sql = "select count(*) from STP_HEADER where id=$i and timestampdiff(HOUR,date_time,now()) < 24;";
-        mysql_select_db($DB);
-        $retval = mysql_query( $sql, $conn );
-        if(! $retval ) {
-            die('Could not get data: ' . mysql_error());
+        if ($result = mysqli_query($conn, $sql )) {
+            $row = mysqli_fetch_assoc($result);
+        } else {
+            die('Could not get data: ');
+            #die('Could not get data: ' . mysqli_error($conn));
         }
- 
-        $row = mysql_fetch_array($retval, MYSQL_ASSOC);
         echo "- last 24 hours: ".number_format($row['count(*)'])." ";
+        mysqli_free_result($result);
 
         # Now the frames in last 90 mins
         $sql = "select count(*) from STP_HEADER where id=$i and timestampdiff(MINUTE,date_time,now()) < 90;";
-        mysql_select_db($DB);
-        $retval = mysql_query( $sql, $conn );
-        if(! $retval ) {
-            die("Could not get 90 min data for $i : " . mysql_error());
+        if ($result = mysqli_query($conn, $sql )) {
+            $row = mysqli_fetch_assoc($result);
+        } else {
+            die('Could not get data: ');
+            #die('Could not get data: ' . mysqli_error($conn));
         }
-        $row = mysql_fetch_array($retval, MYSQL_ASSOC);
         echo " - last 90 mins: ".number_format($row['count(*)'])." <br>";
+        mysqli_free_result($result);
 
         # Now the list of ground stations in the last 90 mins
         echo "From ground stations: <br>";
         $sql = "select distinct receiver from ( select a.receiver, a.uptime from STP_HEADER a where a.id=$i and timestampdiff(MINUTE,a.date_time,now()) < 90 order by a.resets, a.uptime desc) tmp;";
-        mysql_select_db($DB);
-        $retval = mysql_query( $sql, $conn );
-        if(! $retval ) {
-            die('Could not get data: ' . mysql_error());
+        if ($result = mysqli_query($conn, $sql )) {
+            $row = mysqli_fetch_assoc($result);
+        } else {
+            die('Could not get data: ');
+            #die('Could not get data: ' . mysqli_error($conn));
         }
+
         $stations = 0; 
-        while($row = mysql_fetch_array($retval, MYSQL_ASSOC)) {
+        while($row = mysqli_fetch_assoc($result)) {
             echo "<a href=ground_station.php?id=$i&db=$DB&station={$row['receiver']}>{$row['receiver']}</a> ";
             $stations = $stations + 1;
             if ($stations == 7) {
                 $stations=0;
                 #echo "<br>";
             }
-         }
-         echo "<br> ";
-         echo "<br> ";
+        }
+        mysqli_free_result($result);
+        echo "<br> ";
+        echo "<br> ";
     }
 
-    $dbhost = 'localhost:3036';
+    #
+    # MAIN - Execution stats here
+    #
+    $dbhost = 'localhost';
     $dbuser = 'foxrpt';
     $dbpass = 'amsatfox';
 
@@ -131,15 +141,16 @@ table, th, td {
     	$archive_where="on STP_HEADER.receiver=STP_HEADER_ARCHIVE_COUNT.receiver";
     }
     echo "<h1 class=entry-title>$name Telemetry Leaderboard</h1> ";
-    $conn = mysql_connect($dbhost, $dbuser, $dbpass);
-   
-    if(! $conn ) {
-        die('Could not connect: ' . mysql_error());
+    $conn = mysqli_connect($dbhost, $dbuser, $dbpass, $DB);
+    if(mysqli_connect_errno($conn)) {
+       # Not to be inthe production code
+       #echo "Error: Failed to make a MySQL connection, here is why: <br>";
+       #echo "Errno: " . mysqli_connect_errno($conn) . "<br>";
+       #echo "Error: " . mysqli_connect_error($conn) . "<br>";
+        die("No Connection<br>");
     }
  
-    # ROW SPAN needs to be at least 5x the number of spacecraft to display
-    #echo "<td rowspan=50 valign=top>";
-	
+    # This <div> holds the individual spacecrat results to the right
     echo "<div class='col-2 latest-stats' style='float:right;'>";
     if ($id=='0') {
         latest(1, "");
@@ -152,12 +163,12 @@ table, th, td {
         else if ($id == 4)
             latest(4, "fox1d/images");
         else
-            latest($id, "");
+           latest($id, "");
     }
-    #echo "</td>";
-    #echo	"</tr>";
     echo "</div>";
 	
+    # This is the <div> for the table of leaderboard results
+    # 'col-1' class handles the width requirements for different screen sizes
     echo "<div class='col-1'>";
     echo "<table cellspacing='0' cellpadding='0' width=1024 border='0'>";
 	
@@ -174,29 +185,28 @@ table, th, td {
     } else {
         $sql = "call StpLeaderboardTotalsById($id)";
     }
-
-    mysql_select_db($DB);
-    $retval = mysql_query( $sql, $conn );
-    if(! $retval ) {
-        die('Could not get data: ' . mysql_error());
-    }
-   
-    if ($callsign == "" && !empty($_SESSION['user'])) {
-        $callsign=$_SESSION['user'];
-    }
-    $j=1;
-    while($row = mysql_fetch_array($retval, MYSQL_ASSOC) ) {
-        if ($j < $ROW_LIMIT || strcasecmp($row['receiver'], $callsign) == 0) {
-            echo "<tr><td align='center'>$j</td> ".
-            "<td><a href=ground_station.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td>  ".
-            "<td align='center'>".number_format($row['DUV'])."</td>".
-            "<td align='center'>".number_format($row['HighSpeed'])."</td> ".
-            "<td align='center'>".number_format($row['total'])."</td> ".
-            "<td align='center'>".number_format($row['last'])."</td> </tr> ";
+    if ($result = mysqli_query($conn, $sql )) {
+        if ($callsign == "" && !empty($_SESSION['user'])) {
+            $callsign=$_SESSION['user'];
         }
-        $j++;
+        $j=1;
+        while($row = mysqli_fetch_assoc($result) ) {
+            if ($j < $ROW_LIMIT || strcasecmp($row['receiver'], $callsign) == 0) {
+                echo "<tr><td align='center'>$j</td> ".
+                "<td><a href=ground_station.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td>  ".
+                "<td align='center'>".number_format($row['DUV'])."</td>".
+                "<td align='center'>".number_format($row['HighSpeed'])."</td> ".
+                "<td align='center'>".number_format($row['total'])."</td> ".
+                "<td align='center'>".number_format($row['last'])."</td> </tr> ";
+            }
+            $j++;
+        }
+        mysqli_free_result($result);
+    } else {
+        die('Could not get data: ');
+        #die('Could not get data: ' . mysqli_error($conn));
     }
-    mysql_close($conn);
+    mysqli_close($conn);
     echo "</table>";
     echo "</div>";
 	
@@ -246,6 +256,8 @@ It will decode, store and allow analysis of telemetry and onboard experiments.
 <p>
 FoxTelem comes with a manual which you can find from the Help menu.  It covers the basics, but Software Defined Radio, Digital Signal processing and telemetry are non trivial topics.  It's relatively easy to decode the first few frames, but you can spend a lifetime perfecting your ground station.  These articles are aimed at taking you a step beyond the basics.
 </p>
+<a href=http://www.g0kla.com/workbench/2019-03-09.php>Costas Loop or Dot Product Decoder for BPSK</a>
+<br>
 <a href=http://www.g0kla.com/workbench/2018-01-26.php>Earth Plots Tutorial - What they are and how to plot them</a>
 <br>
 <a href=http://www.g0kla.com/foxtelem/skyplot.php>Analyze your QTH with SKY PLOTs to see how well you are receving</a>
