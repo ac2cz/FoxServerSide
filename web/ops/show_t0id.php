@@ -67,53 +67,69 @@ Save the calcualted value and enter it into the <a href=edit_t0id.php?id=<?php e
 <input type="text" name="num"/> 
 </td></tr>
 </table>
+<input type="checkbox" name="queryArchive" value="yes">Also query archive<br>
+<br>
 <input type="submit" value="Get Rows" name="add"/>
 </form>
 
 <p>
 <br>
 <?php
-   $arg1 = $_POST['reset'];
-   $arg2 = $_POST['rx'];
-   $arg3 = $_POST['num'];
-   if ($arg1 <> "" && $arg2<> "") {
-      if ($arg3 == "") $arg3 = 10;
-      echo "<strong>For reset: $arg1 at Groundstation: $arg2</strong><br>";
-      $a = file_get_contents("http://localhost:8080/T0/$id/$arg1/$arg2/$arg3");
-      echo ($a);
-   } else if ($arg1 <> "" ) {
-      $limit = $arg3;
-      if ($limit == "" || $limit > 100) {
-          $limit = 100;
-      }
-      echo "<strong>Ground stations that submitted records for Reset $arg1 (limit $limit)</strong><br><br><table>";
-      $dbhost = 'localhost:3036';
-      $dbuser = 'foxrpt';
-      $dbpass = 'amsatfox';
-      $DB = 'FOXDB';
-      $conn = mysql_connect($dbhost, $dbuser, $dbpass);
-      mysql_select_db($DB);
-
-      if(! $conn ) { die('Could not connect: ' . mysql_error()); }
-
-      $sql = "select resets, uptime, receiver from STP_HEADER where id=$id and resets=$arg1 order by uptime limit $limit;";
-        mysql_select_db($DB);
-        $retval = mysql_query( $sql, $conn );
-        if(! $retval ) {
-            die('Could not get data: ' . mysql_error());
+    $arg1 = $_POST['reset'];
+    $arg2 = $_POST['rx'];
+    $arg3 = $_POST['num'];
+    $query_archive = $_POST['queryArchive'];
+    if ($arg1 <> "" && $arg2<> "") {
+        if ($arg3 == "") $arg3 = 10;
+        echo "<strong>For reset: $arg1 at Groundstation: $arg2</strong><br>";
+        $a = file_get_contents("http://localhost:8080/T0/$id/$arg1/$arg2/$arg3");
+        echo ($a);
+    } else if ($arg1 <> "" ) {
+        $limit = $arg3;
+        if ($limit == "" || $limit > 100) {
+            $limit = 100;
         }
+        $dbhost = 'localhost';
+        $dbuser = 'foxrpt';
+        $dbpass = 'amsatfox';
+        $DB = 'FOXDB';
+        $conn = mysqli_connect($dbhost, $dbuser, $dbpass, $DB);
+        if(mysqli_connect_errno($mysqli)) {
+            # Not to be inthe production code
+            #echo "Error: Failed to make a MySQL connection, here is why: <br>";
+            #echo "Errno: " . mysqli_connect_errno($mysqli) . "<br>";
+            #echo "Error: " . mysqli_connect_error($mysqli) . "<br>";
+            die("No Connection<br>");
+        }
+
+        echo "<p><strong>Ground stations that submitted records for Reset $arg1 (limit $limit)</strong></p><table>";
         echo "<tr><td><b>Resets</b></td><td><b>Uptime</b></td><td><b>Receiver</b></td></tr> ";
-        while($row = mysql_fetch_array($retval, MYSQL_ASSOC)) {
-            echo "<tr><td>{$row['resets']}</td><td> {$row['uptime']}</td><td> <a href=show_t0id.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td></tr> ";
+        $sql = "select resets, uptime, receiver from STP_HEADER where id=$id and resets=$arg1 order by uptime limit $limit;";
+        if ($result = mysqli_query($conn, $sql )) {
+            while($row = mysqli_fetch_assoc($result)) {
+                echo "<tr><td>{$row['resets']}</td><td> {$row['uptime']}</td><td> <a href=show_t0id.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td></tr> ";
+            }
+        } else { die('Could not get data: '); }
 
-        }
         echo"</table>";
-        mysql_close($conn);
+        if ($query_archive == 'yes') {
+            echo "<p><strong>Ground stations in the archive that submitted records for Reset $arg1 (limit $limit)</strong></p><table>";
+            echo "<tr><td><b>Resets</b></td><td><b>Uptime</b></td><td><b>Receiver</b></td></tr> ";
+            $sql = "select resets, uptime, receiver from STP_HEADER_ARCHIVE where id=$id and resets=$arg1 order by uptime limit $limit;";
+            if ($result = mysqli_query($conn, $sql )) {
+                while($row = mysqli_fetch_assoc($result)) {
+                    echo "<tr><td>{$row['resets']}</td><td> {$row['uptime']}</td><td> <a href=show_t0id.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td></tr> ";
+                }
+            } else { die('Could not get data: '); }
 
-   } else {
-      echo "<strong>You need to specify a reset and receiver (ground station name)</strong><br>"; 
-      echo "<strong>Enter just a reset to get a list of the receivers that submitted data</strong><br>"; 
-   }
+            echo"</table>";
+        }
+        mysqli_close($conn);
+
+    } else {
+        echo "<strong>You need to specify a reset and receiver (ground station name)</strong><br>"; 
+        echo "<strong>Enter just a reset to get a list of the receivers that submitted data</strong><br>"; 
+    }
 ?>
 
 <br>
