@@ -14,7 +14,7 @@
         // people can view your members-only content without logging in.
         die("Redirecting to login.php");
     }
-    if(($_SESSION['user']['admin']) == '0') {
+    if(($_SESSION['user']['admin']) != '10') {
         die("Admin rights are required to add users");
     }
     // This if statement checks to determine whether the registration form has been submitted 
@@ -132,11 +132,13 @@
                 username, 
                 password, 
                 salt, 
+                admin, 
                 email 
             ) VALUES ( 
                 :username, 
                 :password, 
                 :salt, 
+                :admin, 
                 :email 
             ) 
         "; 
@@ -175,6 +177,7 @@
             ':username' => $_POST['username'], 
             ':password' => $password, 
             ':salt' => $salt, 
+            ':admin' => $_POST['priv'],
             ':email' => $_POST['email'] 
         ); 
          
@@ -213,6 +216,9 @@
     <br /><br /> 
     Password:<br /> 
     <input type="password" name="password" value="" /> 
+    <br /><br /> 
+    Level (10=Admin, 5=Ops, 0=None:<br /> 
+    <input type="text" name="priv" value="0" /> 
     <br /><br /> 
     <input type="submit" value="Register" /> 
 </form>

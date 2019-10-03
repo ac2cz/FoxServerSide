@@ -29,6 +29,8 @@
 <?php include "../id_loopup.php"; ?>
 <h1 class="entry-title">AMSAT OPERATIONS </h1>
 Logged in as: <?php echo htmlentities($_SESSION['user']['username'], ENT_QUOTES, 'UTF-8'); ?><br /> 
+<?php if(($_SESSION['user']['admin']) >= '5') { 
+echo '
 <h2>FOX-1A Maintenance</h2>
 <a href="show_t0id.php?id=1">Calculate Time Zero for a Reset</a><br /> 
 <a href="edit_t0id.php?id=1">Edit Time Zero Resets File</a><br /> 
@@ -41,10 +43,13 @@ Logged in as: <?php echo htmlentities($_SESSION['user']['username'], ENT_QUOTES,
 <h2>FOX-1D Maintenance</h2>
 <a href="show_t0id.php?id=4">Calculate Time Zero for a Reset</a><br /> 
 <a href="edit_t0id.php?id=4">Edit Time Zero Resets File</a><br /> 
+';
+}
+?>
 <h2>Admin</h2>
 <a href="memberlist.php">Ops Team</a><br /> 
 <?php
-if(($_SESSION['user']['admin']) == '1') { 
+if(($_SESSION['user']['admin']) == '10') { 
    echo '<a href="register.php">Add User</a><br />'; 
    echo '<a href="delete_user.php">Delete User</a><br />'; 
 }

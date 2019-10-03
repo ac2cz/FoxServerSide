@@ -13,6 +13,10 @@
         // people can view your members-only content without logging in. 
         die("Redirecting to login.php"); 
     } 
+     if(($_SESSION['user']['admin']) < '5') {
+        die("Operations rights are required to change T0");
+    }
+
      
     // Everything below this point in the file is secured by the login system 
     // We can display the user's username to them by reading it from the session 

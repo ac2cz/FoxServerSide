@@ -15,7 +15,7 @@
         die("Redirecting to login.php");
     }
 
-    if(($_SESSION['user']['admin']) == '0') {
+    if(($_SESSION['user']['admin']) != '10') {
        die("Admin rights are required to remove users");
     }
 

@@ -23,6 +23,7 @@
         SELECT 
             id, 
             username, 
+            admin, 
             email 
         FROM users 
     "; 
@@ -57,12 +58,16 @@
         <th>ID</th> 
         <th>Username</th> 
         <th>E-Mail Address</th> 
+        <th>Access</th> 
     </tr> 
     <?php foreach($rows as $row): ?> 
         <tr> 
             <td><?php echo $row['id']; ?></td> <!-- htmlentities is not needed here because $row['id'] is always an integer --> 
             <td><?php echo htmlentities($row['username'], ENT_QUOTES, 'UTF-8'); ?></td> 
             <td><?php echo htmlentities($row['email'], ENT_QUOTES, 'UTF-8'); ?></td> 
+            <td>
+            <?php if (htmlentities($row['admin'] >= 5)) { echo "OPS"; } else { echo "---";} ?>
+            </td>
         </tr> 
     <?php endforeach; ?> 
 </table> 
