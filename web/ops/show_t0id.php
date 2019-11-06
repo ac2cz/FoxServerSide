@@ -25,8 +25,13 @@
 ?> 
 <?php include "../getName.php"; 
 $id = $_GET['id'];
+$reset = $_GET['resets'];
+$receiver = $_GET['receiver'];
 if (!is_numeric($id)) { die("invalid paramater"); }
-if (id < 0 || $id > 5) { die("invalid FoxId"); }
+if ($reset <> "") {
+    if (!is_numeric($reset)) { die("invalid paramater"); }
+}
+if (id < 0 || $id > 255) { die("invalid FoxId"); }
 if ($id == "") { $id = "1"; }
 $name=getName($id);
 ?>
@@ -58,38 +63,46 @@ audio to FoxTelem.  e.g. A virtual audio cable introduces delay as does a sepera
 Save the calcualted value and enter it into the <a href=edit_t0id.php?id=<?php echo $id?>>T0 file</a> 
 <p>
 
-<form action="<?=$PHP_SELF?>" method="post"> 
+<form action="<?=$PHP_SELF?>" method="get"> 
 <style> td { border: 5px } th { background-color: lightgray; border: 3px solid lightgray; } td { padding: 5px; vertical-align: top; background-color: darkgray } </style>
 
 <table>
-<tr><th>Reset</th><th>Receiver</th><th>Number</th></tr>
+<tr><th>From Reset</th><th>Reset</th><th>Receiver</th><th>Number</th></tr>
 <tr><td>
-<input type="text" name="reset"/> 
+<input type="text" name="from_reset"/> 
 </td><td>
-<input type="text" name="rx"/> 
+<input type="text" name="resets" value="<?php echo htmlspecialchars($reset); ?>"/> 
+</td><td>
+<input type="text" name="receiver" value="<?php echo htmlspecialchars($receiver); ?>"/> 
 </td><td>
 <input type="text" name="num"/> 
 </td></tr>
 </table>
 <input type="checkbox" name="queryArchive" value="yes">Also query archive<br>
 <br>
-<input type="submit" value="Get Rows" name="add"/>
+<input type="submit" />
+<input type="hidden" name="id" value="<?php echo htmlspecialchars($id); ?>"/>
 </form>
 
 <p>
 <br>
 <?php
-    $arg1 = $_POST['reset'];
-    $arg2 = $_POST['rx'];
-    $arg3 = $_POST['num'];
-    $query_archive = $_POST['queryArchive'];
-    if ($arg1 <> "" && $arg2<> "") {
-        if ($arg3 == "") $arg3 = 10;
-        echo "<strong>For reset: $arg1 at Groundstation: $arg2</strong><br>";
-        $a = file_get_contents("http://localhost:8080/T0/$id/$arg1/$arg2/$arg3");
+    $fromReset = $_GET['from_reset'];
+    $number = $_GET['num'];
+    $query_archive = $_GET['queryArchive'];
+    if ($reset <> "" && $receiver<> "") {
+        if ($number == "") $number = 10;
+        echo "<strong>For reset: $reset at Groundstation: $receiver</strong><br>";
+        $a = file_get_contents("http://localhost:8080/T0/$id/$reset/$receiver/$number");
         echo ($a);
-    } else if ($arg1 <> "" ) {
-        $limit = $arg3;
+    } else if ($reset <> "" ) {
+	$resetQuery = " resets=$reset";
+	$orderBy = " order by uptime";
+        if ($fromReset <> "") {
+            $resetQuery = " resets >= $fromReset and resets <= $reset ";
+	    $orderBy = " order by resets, uptime";
+        }
+        $limit = $number;
         if ($limit == "" || $limit > 100) {
             $limit = 100;
         }
@@ -106,23 +119,27 @@ Save the calcualted value and enter it into the <a href=edit_t0id.php?id=<?php e
             die("No Connection<br>");
         }
 
-        echo "<p><strong>Ground stations that submitted records for Reset $arg1 (limit $limit)</strong></p><table>";
-        echo "<tr><td><b>Resets</b></td><td><b>Uptime</b></td><td><b>Receiver</b></td></tr> ";
-        $sql = "select resets, uptime, receiver from STP_HEADER where id=$id and resets=$arg1 order by uptime limit $limit;";
+        echo "<p><strong>Ground stations that submitted records for Reset $reset (limit $limit)</strong></p><table>";
+        echo "<tr><td><b>Resets</b></td><td><b>Frames</b></td><td><b>Receiver</b></td></tr> ";
+        $sql = "select resets, receiver, count(uptime) as count from STP_HEADER where id=$id and $resetQuery group by resets, receiver $orderBy ;";
         if ($result = mysqli_query($conn, $sql )) {
             while($row = mysqli_fetch_assoc($result)) {
-                echo "<tr><td>{$row['resets']}</td><td> {$row['uptime']}</td><td> <a href=show_t0id.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td></tr> ";
+                    $rowReset=$row['resets'];
+                    $count=$row['count'];
+                echo "<tr><td>{$rowReset}</td><td> {$count}</td><td> <a href=show_t0id.php?id=$id&db=$DB&resets=$rowReset&receiver={$row['receiver']}>{$row['receiver']}</a></td></tr> ";
             }
         } else { die('Could not get data: '); }
 
         echo"</table>";
         if ($query_archive == 'yes') {
-            echo "<p><strong>Ground stations in the archive that submitted records for Reset $arg1 (limit $limit)</strong></p><table>";
-            echo "<tr><td><b>Resets</b></td><td><b>Uptime</b></td><td><b>Receiver</b></td></tr> ";
-            $sql = "select resets, uptime, receiver from STP_HEADER_ARCHIVE where id=$id and resets=$arg1 order by uptime limit $limit;";
+            echo "<p><strong>Ground stations in the archive that submitted records for Reset $reset (limit $limit)</strong></p><table>";
+            echo "<tr><td><b>Resets</b></td><td><b>Frames</b></td><td><b>Receiver</b></td></tr> ";
+            $sql = "select resets, receiver, count(uptime) as count from STP_HEADER_ARCHIVE where id=$id and $resetQuery group by resets, receiver $orderBy ;";
             if ($result = mysqli_query($conn, $sql )) {
                 while($row = mysqli_fetch_assoc($result)) {
-                    echo "<tr><td>{$row['resets']}</td><td> {$row['uptime']}</td><td> <a href=show_t0id.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td></tr> ";
+                    $rowReset=$row['resets'];
+                    $count=$row['count'];
+                    echo "<tr><td>{$rowReset}</td><td> {$count}</td><td> <a href=show_t0id.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td></tr> ";
                 }
             } else { die('Could not get data: '); }
 
@@ -133,6 +150,7 @@ Save the calcualted value and enter it into the <a href=edit_t0id.php?id=<?php e
     } else {
         echo "<strong>You need to specify a reset and receiver (ground station name)</strong><br>"; 
         echo "<strong>Enter just a reset to get a list of the receivers that submitted data</strong><br>"; 
+        echo "<strong>Enter just a 'from reset' and a reset to get a list of the receivers that submitted data for those resets and any in between </strong><br>"; 
     }
 ?>
 
