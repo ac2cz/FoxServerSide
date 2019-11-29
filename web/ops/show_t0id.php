@@ -132,14 +132,14 @@ Save the calcualted value and enter it into the <a href=edit_t0id.php?id=<?php e
 
         echo"</table>";
         if ($query_archive == 'yes') {
-            echo "<p><strong>Ground stations in the archive that submitted records for Reset $reset (limit $limit)</strong></p><table>";
+            echo "<p><strong>Ground stations in the archive that submitted records for Reset $reset</strong></p><table>";
             echo "<tr><td><b>Resets</b></td><td><b>Frames</b></td><td><b>Receiver</b></td></tr> ";
             $sql = "select resets, receiver, count(uptime) as count from STP_HEADER_ARCHIVE where id=$id and $resetQuery group by resets, receiver $orderBy ;";
             if ($result = mysqli_query($conn, $sql )) {
                 while($row = mysqli_fetch_assoc($result)) {
                     $rowReset=$row['resets'];
                     $count=$row['count'];
-                    echo "<tr><td>{$rowReset}</td><td> {$count}</td><td> <a href=show_t0id.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td></tr> ";
+                    echo "<tr><td>{$rowReset}</td><td> {$count}</td><td> <a href=show_t0id.php?id=$id&db=$DB&resets=$rowReset&receiver={$row['receiver']}>{$row['receiver']}</a></td></tr> ";
                 }
             } else { die('Could not get data: '); }
 

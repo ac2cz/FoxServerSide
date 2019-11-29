@@ -8,6 +8,7 @@
     // to an empty value, which will be shown if the user has not submitted the form. 
     $submitted_username = ''; 
      
+    if ($_POST['username'] == "guest") die("Sorry, Guest can't login interactively");
     // This if statement checks to determine whether the login form has been submitted 
     // If it has, then the login code is run, otherwise the form is displayed 
     if(!empty($_POST)) 
