@@ -222,7 +222,7 @@ table, th, td {
                 "<td><a href=ground_station.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td>  ".
                 "<td align='center'>".number_format($row['DUV']+$row['HighSpeed'])."</td>".
                 "<td align='center'>".number_format($row['PSK'])."</td> ".
-                "<td align='center'>".number_format($row['total'])."</td> ".
+                "<td align='center'>".number_format($row['DUV']+$row['PSK'])."</td> ".
                 "<td align='center'>".number_format($row['last'])."</td> </tr> ";
             }
             $j++;
