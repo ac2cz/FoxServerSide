@@ -26,7 +26,7 @@
 <?php include "../getName.php";
 $id = $_GET['id'];
 if (!is_numeric($id)) { die("invalid paramater"); }
-if (id < 0 || $id > 5) { die("invalid FoxId"); }
+if (id < 0 || $id > 255) { die("invalid FoxId"); }
 if ($id == "") { $id = "1"; }
 $name=getName($id);
 ?>
