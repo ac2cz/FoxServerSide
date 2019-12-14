@@ -66,8 +66,10 @@
          
         // If the user entered a new password, we need to hash it and generate a fresh salt 
         // for good measure. 
-        if(!empty($_POST['password'])) 
-        { 
+        if(!empty($_POST['password'])) { 
+            if ($_POST['password'] != $_POST['password2']) {
+                die("Passwords don't match, nothing changed"); 
+            }
             $salt = dechex(mt_rand(0, 2147483647)) . dechex(mt_rand(0, 2147483647)); 
             $password = hash('sha256', $_POST['password'] . $salt); 
             for($round = 0; $round < 65536; $round++)
@@ -107,8 +109,7 @@
          
         // If the user is changing their password, then we extend the SQL query 
         // to include the password and salt columns and parameter tokens too. 
-        if($password !== null) 
-        { 
+        if($password !== null) { 
             $query .= " 
                 , password = :password 
                 , salt = :salt 
@@ -166,6 +167,9 @@
     Password:<br /> 
     <input type="password" name="password" value="" /><br /> 
     <i>(leave blank if you do not want to change your password)</i> 
+    <br /><br /> 
+    Confirm Password:<br /> 
+    <input type="password" name="password2" value="" /><br /> 
     <br /><br /> 
     <input type="submit" value="Update Account" /> 
 </form>
