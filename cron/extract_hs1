@@ -27,7 +27,7 @@ function extract {
     if [ ${PIPESTATUS[0]} -ne 0 ]; then
         error_exit "$LINENO: An SQL error has occurred."
     fi
-    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}${EXP}TELEMETRY order by resets, uptime, type; " | sed 's/\t/,/g' > $DIR/$LOGDIR/FOX${ID}radtelemetry.log
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}${EXP}TELEMETRY order by resets, uptime, type; " | sed 's/\t/,/g' > $DIR/$LOGDIR/FOX${ID}cantelemetry.log
     if [ ${PIPESTATUS[0]} -ne 0 ]; then
         error_exit "$LINENO: An SQL error has occurred."
     fi
@@ -65,7 +65,7 @@ function extractWOD {
     if [ ${PIPESTATUS[0]} -ne 0 ]; then
         error_exit "$LINENO: An SQL error has occurred in WOD extract."
     fi
-    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}WOD${EXP}TELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/FOX${ID}wodradtelemetry.log
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM Fox${ID}WOD${EXP}TELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/FOX${ID}wodcantelemetry.log
     if [ ${PIPESTATUS[0]} -ne 0 ]; then
         error_exit "$LINENO: An SQL error has occurred in WOD extract."
     fi
@@ -86,7 +86,7 @@ function packageLogs {
     tar cf serverlogs.tar *.log || error_exit "$LINENO: An error has occurred."
     gzip -f serverlogs.tar || error_exit "$LINENO: An error has occurred."
     cp -f serverlogs.tar.gz ~/tlm/$LOGDIR || error_exit "$LINENO: An error has occurred."
-    ~/cron/convertDB.py . || error_exit "$LINENO: An error has occurred."
+    ~/cron/convertDB_hs1.py . || error_exit "$LINENO: An error has occurred."
     tar cf FOXDB.tar FOXDB || error_exit "$LINENO: An error has occurred."
     gzip -f FOXDB.tar || error_exit "$LINENO: An error has occurred."
     cp -f FOXDB.tar.gz ~/tlm/$LOGDIR || error_exit "$LINENO: An error has occurred."
@@ -94,15 +94,8 @@ function packageLogs {
 
 #extract 1 ao85 RAD RAD2 || error_exit "$LINENO: An error has occurred."
 #packageLogs 1 ao85 || error_exit "$LINENO: An error has occurred."
-extract 2 radfxsat RAD RAD2 || error_exit "$LINENO: An error has occurred."
-packageLogs 2 radfxsat || error_exit "$LINENO: An error has occurred."
-extract 3 fox1c RAD RAD2 || error_exit "$LINENO: An error has occurred."
-packageLogs 3 fox1c || error_exit "$LINENO: An error has occurred."
-extract 4 fox1d RAD RAD2 || error_exit "$LINENO: An error has occurred."
-extractHerci 4 fox1d || error_exit "$LINENO: An error has occurred."
-packageLogs 4 fox1d || error_exit "$LINENO: An error has occurred."
-#extract 6 HuskySat CAN || error_exit "$LINENO: An error has occurred."
-#extractWOD 6 HuskySat CAN || error_exit "$LINENO: An error has occurred."
-#packageLogs 6 HuskySat || error_exit "$LINENO: An error has occurred."
+extract 6 husky CAN || error_exit "$LINENO: An error has occurred."
+extractWOD 6 husky CAN || error_exit "$LINENO: An error has occurred."
+packageLogs 6 husky || error_exit "$LINENO: An error has occurred."
 
 #rm -f *.log

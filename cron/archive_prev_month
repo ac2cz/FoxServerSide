@@ -5,8 +5,15 @@ MONTH=`date +%m`
 YEAR=`date +%Y`
 # This is reliable on the first day of a month, but not on the last day or two
 PREV_MONTH=`date +%m -d 'last month'`
+PREV_YEAR=`date +%Y -d 'last year'`
 #PREV_MONTH=10
-DIR=/home/tlmmgr/FoxServer/`date +%Y/`
+if [ $PREV_MONTH -eq 12 ]
+then
+    YEAR=$PREV_YEAR
+fi
+echo For Year: $YEAR
+
+DIR=/home/tlmmgr/FoxServer/$YEAR
 ARCHIVE_FILE=STP.${YEAR}.${PREV_MONTH}.tar
 cd $DIR
 if [ -d $PREV_MONTH ]

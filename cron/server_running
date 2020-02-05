@@ -3,10 +3,11 @@ if [ -f ~/cron/PAUSE_SERVER ]; then
     exit 0
 fi
 
-logfile=~/FoxServer/server_running.log
+logfile=~/FoxServer/server_lsof_check
 server=`/bin/hostname`
 
 bigFiles=$(ls -hl ~/FoxServer/*.log | awk '{print $5}' | grep "G" | wc -l)
+lsofCheck=$(/usr/sbin/lsof | grep tlmmgr | grep java | grep sock | wc -l)
 
 if [ $bigFiles -ne 0 ]
 then
@@ -17,12 +18,20 @@ EOF
 exit 1
 fi
 
+if [ $lsofCheck -gt 10 ]
+then
+    /bin/mail -s "$server Holding $lsofCheck sockets" g0kla@arrl.net 16465751481@tmomail.net <<EOF
+$server TELEM SERVER HOLDING TOO MANY SOCKETS: Server may be out of control
+EOF
+exit 1
+fi
+
 case "$(/bin/ps auxwww | /bin/grep FoxServer.jar | /bin/grep -v grep | wc -l)" in
 
 0) echo "FoxServer is not running, restarting $(date)" >> $logfile
     cd ~/FoxServer
     /bin/ps auxwww | grep FoxServer.jar > /tmp/ps.out
-    /bin/cat ~/.fox_pw | /usr/bin/java -jar ~/FoxServer/FoxServer.jar g0kla FOXDB & >> $logfile 2>&1 &
+    /bin/cat ~/.fox_pw | /usr/bin/java -Xmx128M -Xms32M -jar ~/FoxServer/FoxServer.jar g0kla FOXDB & >> $logfile 2>&1 &
     /bin/mail -s "$server was not running FoxServer and it was restarted" g0kla@arrl.net 16465751481@tmomail.net < /tmp/ps.out
     rm /tmp/ps.out
 ;;

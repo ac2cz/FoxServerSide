@@ -6,7 +6,7 @@ DATE=`date +%Y-%m-%d-%T`
 DIR=~/cron
 OPS_DIR=~/tlm/ops
 password=$(/bin/cat ~/.fox_pw)
-MAIL_TO="g0kla@arrl.net marklhammond@gmail.com glasbrenner@mindspring.com"
+MAIL_TO="g0kla@arrl.net wa4sca@gmail.com marklhammond@gmail.com glasbrenner@mindspring.com"
 #MAIL_TO="g0kla@arrl.net"
 
 function checkMaxReset {
@@ -16,11 +16,11 @@ function checkMaxReset {
     #/bin/grep -Fv  $DIR/max_reset.log  $OPS_DIR/FOX${1}T0.txt > $DIR/missing_resets.log
     #case "$(cat $DIR/missing_resets.log  | wc -l)" in
     RESET=`/bin/cat  $DIR/max_reset.log`
-    case "$(/bin/grep $RESET $OPS_DIR/FOX${1}T0.txt  | wc -l)" in
+    case "$(/bin/grep $RESET $OPS_DIR/FOX${ID}T0.txt  | wc -l)" in
 
-    0) echo "Fox $1 is missing latest reset $RESET in the T0 File. $(date)" > /tmp/resets.out
-        /bin/mail -s "Fox $1 missing reset" $MAIL_TO < /tmp/resets.out
-        rm /tmp/resets.out
+    0) echo "Fox $ID is missing latest reset $RESET in the T0 File. $(date)" > /tmp/resets.out
+        /bin/mail -s "Fox $ID missing reset" $MAIL_TO < /tmp/resets.out
+#        rm /tmp/resets.out
     ;;
 
     1) #all seems well
@@ -31,3 +31,6 @@ function checkMaxReset {
 }
 
 checkMaxReset 1
+checkMaxReset 2
+checkMaxReset 3
+checkMaxReset 4

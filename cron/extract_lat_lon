@@ -1,0 +1,17 @@
+#!/bin/bash
+
+DATE=`date +%Y-%m-%d-%T`
+DIR=.
+password=$(/bin/cat ~/.fox_pw)
+
+function extract {
+    ID=$1
+    #mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e "SET @a:=0; SELECT @a:=@a+1 No, resets, uptime, receiver, sequenceNumber, date_time from STP_HEADER order by date_time;" | sed 's/\t/,/g' > $DIR/extract.log
+    #mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT sequenceNumber, stpDate, resets, uptime, type FROM STP_HEADER where receiver = 'VK5HI' order by sequenceNumber; " | sed 's/\t/,/g' > $DIR/extract.log
+    #mysql --user=g0kla --password=$password --database=FOXDB -e " SELECT * FROM STP_HEADER limit 2; " 
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT count(*), receiver, rx_location FROM STP_HEADER where rx_location <> 'NONE' group by receiver; " | sed 's/\t/,/g' > $DIR/stp_lat_lon_extract.log
+}
+
+
+extract 1
+

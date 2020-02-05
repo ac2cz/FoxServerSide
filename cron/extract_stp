@@ -1,0 +1,24 @@
+#!/bin/bash
+
+DATE=`date +%Y-%m-%d-%T`
+DIR=~/FoxServer/extract2
+password=$(/bin/cat ~/.fox_pw)
+
+function extractStp {
+    ID=$1
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM STP_HEADER where id=${ID} order by resets, uptime; " | sed 's/\t/,/g' > $DIR/server_stp.log
+}
+
+function extractStpArchive {
+    ID=$1
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM STP_HEADER_ARCHIVE where id=${ID} and date_time > '2018-07-15 20:00:00' order by resets, uptime; " | sed 's/\t/,/g' > $DIR/server_stp_archive.log
+}
+
+#extractStp 1
+extractStpArchive 1
+
+cd $DIR
+tar cf server_stp.tar server_stp.log server_stp_archive.log
+gzip -f server_stp.tar
+cp -f server_stp.tar.gz ~/tlm/ao85
+#rm -f *.log
