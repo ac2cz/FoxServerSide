@@ -2,6 +2,14 @@ html {
     overflow-y: scroll;
 }
 
+/* Normalize table settings */
+table, caption, tbody, tfoot, thead, tr, th, td {
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+
+
 /* make sure that padding and border are included in total width */
 * {
     box-sizing: border-box;
@@ -36,6 +44,73 @@ body {
     code { font-size: 0.9em; }
 }
 
+table,
+th,
+td {
+	border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+table {
+	border-collapse: separate;
+	border-spacing: 0;
+	border-width: 1px 0 0 1px;
+	margin: 0 0 1.5em;
+	width: 100%;
+}
+
+th,
+td {
+	border-width: 0 1px 1px 0;
+	padding: 8px;
+}
+
+th {
+	font-weight: bold;
+}
+
+h1 {
+	font-size: 40px;
+	margin-bottom: 20px;
+	line-height: 1.2em;
+	font-weight: 300;
+	text-transform: none;
+}
+
+h2 {
+	font-size: 30px;
+	margin-bottom: 20px;
+	line-height: 1.2em;
+	font-weight: 300;
+	text-transform: none;
+}
+
+h3 {
+	font-size: 20px;
+	margin-bottom: 20px;
+	line-height: 1.2em;
+	font-weight: normal;
+	text-transform: none;
+}
+
+h4,
+h5,
+h6 {
+	margin-bottom: 20px;
+}
+
+a,
+button,
+input {
+	transition: color 0.1s ease-in-out, background-color 0.1s ease-in-out;
+}
+
+a,
+a:visited,
+a:hover,
+a:focus {
+	text-decoration: none;
+}
+
 li { 
     list-style-type:square;
 	list-style-position:outside;
@@ -44,7 +119,6 @@ li {
 }
 
 p {
-    display: block;
     margin-top: 1em;
     margin-bottom: 1em;
     margin-left: 0;

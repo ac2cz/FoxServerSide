@@ -171,6 +171,7 @@ table, th, td {
     # This <div> holds the individual spacecrat results to the right
     echo "<div class='col-2 latest-stats' style='float:right;'>";
     if ($id=='0') {
+        latest(6, "");
         latest(4, "fox1d/images");
         latest(3, "fox1c/images");
         latest(2, "");
@@ -200,13 +201,13 @@ table, th, td {
     
     if ($id==0) {
         if ($PERIOD <= 30) {
-            $sql = "select id, receiver, sum(case when source like '%duv' or source like '%highspeed' then 1 else 0 end) DUV, sum(case when source like '%bpsk' then 1 else 0 end) PSK, sum(case when timestampdiff(DAY,date_time,now()) < 7 then 1 else 0 end) last from STP_HEADER group by receiver order by DUV DESC";
+            $sql = "select id, receiver, sum(case when source like '%duv' or source like '%highspeed' then 1 else 0 end) DUV, sum(case when source like '%bpsk' then 1 else 0 end) PSK, sum(case when source like '%duv' or source like '%highspeed' or source like '%bpsk' then 1 else 0 end) total, sum(case when timestampdiff(DAY,date_time,now()) < 7 then 1 else 0 end) last from STP_HEADER group by receiver order by total DESC";
         } else {
             $sql = "call StpLeaderboardMthTotals()";
         }
     } else {
         if ($PERIOD <= 30) {
-            $sql = "select id, receiver, sum(case when source like '%duv' or source like '%highspeed' then 1 else 0 end) DUV, sum(case when source like '%bpsk' then 1 else 0 end) PSK, sum(case when timestampdiff(DAY,date_time,now()) < 7 then 1 else 0 end) last from STP_HEADER where id=$id group by receiver order by DUV DESC";
+            $sql = "select id, receiver, sum(case when source like '%duv' or source like '%highspeed' then 1 else 0 end) DUV, sum(case when source like '%bpsk' then 1 else 0 end) PSK, sum(case when source like '%duv' or source like '%highspeed' or source like '%bpsk' then 1 else 0 end) total, sum(case when timestampdiff(DAY,date_time,now()) < 7 then 1 else 0 end) last from STP_HEADER where id=$id group by receiver order by last DESC";
         } else {
             $sql = "call StpLeaderboardMthTotalsById($id)";
         }
@@ -222,7 +223,7 @@ table, th, td {
                 "<td><a href=ground_station.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td>  ".
                 "<td align='center'>".number_format($row['DUV']+$row['HighSpeed'])."</td>".
                 "<td align='center'>".number_format($row['PSK'])."</td> ".
-                "<td align='center'>".number_format($row['DUV']+$row['PSK'])."</td> ".
+                "<td align='center'>".number_format($row['total'])."</td> ".
                 "<td align='center'>".number_format($row['last'])."</td> </tr> ";
             }
             $j++;

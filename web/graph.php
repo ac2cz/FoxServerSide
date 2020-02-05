@@ -8,6 +8,7 @@ msat-child/style.css" />
     <!-- Request data to server -->
 
     <?php
+   include "getName.php";
    $arg1 = $_GET['sat'];
    $arg2 = $_GET['field'];
    $raw = $_GET['raw'];
@@ -34,6 +35,7 @@ msat-child/style.css" />
         // delete first two rows (non-numeric)
         array_shift($rows);
         array_shift($rows);
+        $num=count($rows);
     ?>
 
     <!-- Stuff needed to display plot through Google charts -->
@@ -71,11 +73,12 @@ msat-child/style.css" />
                 },
                     title: 
                         '<?php 
-                            echo 'Fox ', $arg1, 'A ', $arg2, ' ';
+                            echo 'Fox ', getName($arg1), ' ', $arg2, ' ';
                             if ($raw == 'conv')
                                 echo 'Converted';
                             else echo 'Raw';
-                            echo ' Values, Reset = ', $rows[0][0];
+                            $lastRow = count($rows[0]);
+                            echo ' Values, Reset = ', $rows[$num-1][0];
                         ?>'
               
             };

@@ -3,7 +3,7 @@
 <title>Fox Spacecraft Health</title>
 
 <!-- JBF 27 JUN 2017 Use style sheet from WordPress upgrade-->
-<link rel="stylesheet" type="text/css" media="all" href="http://www.amsat.org/wordpress/wp-content/themes/generatepress/style.css" />
+<link rel="stylesheet" type="text/css" media="all" href="https://www.amsat.org/wordpress/wp-content/themes/generatepress/style.css" />
 
 </head>
 <body>
@@ -13,5 +13,6 @@
    $id = $_GET['id'];
    if (!is_numeric($id)) { die("invalid paramater"); }
    $a = file_get_contents("http://localhost:8080/frame/$id/1");
-   echo ($a);
+   $b = str_replace('Fox 1F', 'UW HuskySat', $a); 
+   echo ($b);
 ?>

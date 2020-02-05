@@ -43,6 +43,9 @@ echo '
 <h2>FOX-1D Maintenance</h2>
 <a href="show_t0id.php?id=4">Calculate Time Zero for a Reset</a><br /> 
 <a href="edit_t0id.php?id=4">Edit Time Zero Resets File</a><br /> 
+<h2>HuskySat Maintenance</h2>
+<a href="show_t0id.php?id=6">Calculate Time Zero for a Reset</a><br /> 
+<a href="edit_t0id.php?id=6">Edit Time Zero Resets File</a><br /> 
 ';
 }
 ?>
