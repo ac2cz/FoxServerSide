@@ -199,15 +199,15 @@ table, th, td {
         "<td align='center'><strong>Last 7 days</strong></td>";
 		
     
-    if ($id==0) {
+    if ($id==0) { # This is for all spacecraft
         if ($PERIOD <= 30) {
             $sql = "select id, receiver, sum(case when source like '%duv' or source like '%highspeed' then 1 else 0 end) DUV, sum(case when source like '%bpsk' then 1 else 0 end) PSK, sum(case when source like '%duv' or source like '%highspeed' or source like '%bpsk' then 1 else 0 end) total, sum(case when timestampdiff(DAY,date_time,now()) < 7 then 1 else 0 end) last from STP_HEADER group by receiver order by total DESC";
         } else {
             $sql = "call StpLeaderboardMthTotals()";
         }
-    } else {
+    } else { # Just one spacecraft
         if ($PERIOD <= 30) {
-            $sql = "select id, receiver, sum(case when source like '%duv' or source like '%highspeed' then 1 else 0 end) DUV, sum(case when source like '%bpsk' then 1 else 0 end) PSK, sum(case when source like '%duv' or source like '%highspeed' or source like '%bpsk' then 1 else 0 end) total, sum(case when timestampdiff(DAY,date_time,now()) < 7 then 1 else 0 end) last from STP_HEADER where id=$id group by receiver order by last DESC";
+            $sql = "select id, receiver, sum(case when source like '%duv' or source like '%highspeed' then 1 else 0 end) DUV, sum(case when source like '%bpsk' then 1 else 0 end) PSK, sum(case when source like '%duv' or source like '%highspeed' or source like '%bpsk' then 1 else 0 end) total, sum(case when timestampdiff(DAY,date_time,now()) < 7 then 1 else 0 end) last from STP_HEADER where id=$id group by receiver order by total DESC";
         } else {
             $sql = "call StpLeaderboardMthTotalsById($id)";
         }
