@@ -53,6 +53,9 @@ table, th, td {
         if ($imageDir != "")
             echo "| <a href=showImages.php?id=$i>Camera Images</a>";
         echo " <br>";
+        if ($i == 6) {
+            echo "<b style='color:red;' class=entry-title>Only real time data being processed.  No recorded data will be stored</b><br> ";
+        }
 
         # Now calculate the total for this sat and display it
         $sql = "select (select count(*) from STP_HEADER where id=$i) as sumCountHeader;";
@@ -158,7 +161,7 @@ table, th, td {
     else
         echo "<h1 class=entry-title>$name Telemetry - All-Time Leaders</h1> ";
 
-    #echo "<h2 style='color:red;' class=entry-title>FOX TELEMETRY SERVER is current down for maintenance</h1></p> ";
+    #echo "<h2 style='color:red;' class=entry-title>FOX TELEMETRY SERVER is current down for maintenance</h2></p> ";
     $conn = mysqli_connect($dbhost, $dbuser, $dbpass, $DB);
     if(mysqli_connect_errno($conn)) {
        # Not to be inthe production code
@@ -195,7 +198,7 @@ table, th, td {
         "<td><strong>Ground station</strong></td>".
         "<td align='center'><strong>FSK Frames</strong></td>".
         "<td align='center'><strong>PSK Frames</strong></td>".
-        "<td align='center'><strong>Total</strong></td>".
+        "<td align='center'><strong>Last 30 days</strong></td>".
         "<td align='center'><strong>Last 7 days</strong></td>";
 		
     
