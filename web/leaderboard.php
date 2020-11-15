@@ -54,7 +54,7 @@ table, th, td {
             echo "| <a href=showImages.php?id=$i>Camera Images</a>";
         echo " <br>";
         if ($i == 6) {
-            echo "<b style='color:red;' class=entry-title>Only real time data being processed.  No recorded data will be stored</b><br> ";
+            #echo "<b style='color:red;' class=entry-title>Only real time data being processed.  No recorded data will be stored</b><br> ";
         }
 
         # Now calculate the total for this sat and display it
@@ -174,10 +174,10 @@ table, th, td {
     # This <div> holds the individual spacecrat results to the right
     echo "<div class='col-2 latest-stats' style='float:right;'>";
     if ($id=='0') {
-        latest(6, "");
-        latest(4, "fox1d/images");
         latest(3, "fox1c/images");
         latest(2, "");
+        latest(4, "fox1d/images");
+        latest(6, "");
         latest(1, "");
     } else {
         if ($id == 3)
@@ -197,9 +197,11 @@ table, th, td {
     echo "<tr><td><strong>Num</strong></td>".
         "<td><strong>Ground station</strong></td>".
         "<td align='center'><strong>FSK Frames</strong></td>".
-        "<td align='center'><strong>PSK Frames</strong></td>".
-        "<td align='center'><strong>Last 30 days</strong></td>".
-        "<td align='center'><strong>Last 7 days</strong></td>";
+        "<td align='center'><strong>PSK Frames</strong></td>";
+        if ($PERIOD <= 30) {
+            echo "<td align='center'><strong>Last 30 days</strong></td>";
+        }
+        echo "<td align='center'><strong>Last 7 days</strong></td>";
 		
     
     if ($id==0) { # This is for all spacecraft
@@ -225,9 +227,11 @@ table, th, td {
                 echo "<tr><td align='center'>$j</td> ".
                 "<td><a href=ground_station.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td>  ".
                 "<td align='center'>".number_format($row['DUV']+$row['HighSpeed'])."</td>".
-                "<td align='center'>".number_format($row['PSK'])."</td> ".
-                "<td align='center'>".number_format($row['total'])."</td> ".
-                "<td align='center'>".number_format($row['last'])."</td> </tr> ";
+                "<td align='center'>".number_format($row['PSK'])."</td> ";
+                if ($PERIOD <= 30) {
+                   echo  "<td align='center'>".number_format($row['total'])."</td> ";
+                }
+                echo "<td align='center'>".number_format($row['last'])."</td> </tr> ";
             }
             $j++;
         }
