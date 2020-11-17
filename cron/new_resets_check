@@ -4,6 +4,7 @@
 
 DATE=`date +%Y-%m-%d-%T`
 DIR=~/cron
+LOG=max_reset.log
 OPS_DIR=~/tlm/ops
 password=$(/bin/cat ~/.fox_pw)
 MAIL_TO="g0kla@arrl.net wa4sca@gmail.com marklhammond@gmail.com glasbrenner@mindspring.com"
@@ -11,11 +12,13 @@ MAIL_TO="g0kla@arrl.net wa4sca@gmail.com marklhammond@gmail.com glasbrenner@mind
 
 function checkMaxReset {
     ID=$1
-    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e "SELECT max(resets) from STP_HEADER where id=$ID ;" | sed 's/\t/,/g' > $DIR/max_reset.log
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e "SELECT max(resets) from STP_HEADER where id=$ID ;" | sed 's/\t/,/g' > $DIR/$ID$LOG
 
     #/bin/grep -Fv  $DIR/max_reset.log  $OPS_DIR/FOX${1}T0.txt > $DIR/missing_resets.log
     #case "$(cat $DIR/missing_resets.log  | wc -l)" in
-    RESET=`/bin/cat  $DIR/max_reset.log`
+    RESET=`/bin/cat $DIR/$ID$LOG | grep -v NULL`
+    if [ ! -z "$RESET" ]
+    then
     case "$(/bin/grep $RESET $OPS_DIR/FOX${ID}T0.txt  | wc -l)" in
 
     0) echo "Fox $ID is missing latest reset $RESET in the T0 File. $(date)" > /tmp/resets.out
@@ -27,10 +30,11 @@ function checkMaxReset {
     ;;
 
     esac
-
+    fi
 }
 
 checkMaxReset 1
 checkMaxReset 2
 checkMaxReset 3
 checkMaxReset 4
+#checkMaxReset 6
