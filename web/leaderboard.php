@@ -174,11 +174,10 @@ table, th, td {
     # This <div> holds the individual spacecrat results to the right
     echo "<div class='col-2 latest-stats' style='float:right;'>";
     if ($id=='0') {
+        latest(5, "");
         latest(3, "fox1c/images");
         latest(2, "");
         latest(4, "fox1d/images");
-        latest(6, "");
-        latest(1, "");
     } else {
         if ($id == 3)
             latest(3, "fox1c/images");
@@ -240,7 +239,6 @@ table, th, td {
         #die('Could not get data: ');
         die('Could not get data: ' . mysqli_error($conn));
     }
-    mysqli_close($conn);
     echo "</table>";
     echo "</div>";
 	
@@ -326,7 +324,8 @@ FoxTelem comes with a manual which you can find from the Help menu.  It covers t
     if ($id==0 || $id == 3 || $id == 4) {
     echo "<div class='col-1'>";
     if ($id == 0) {
-        echo "<h2>Notable Image from Fox-1D</h2>";
+        echo "<h2>Silent spacecraft memorial</h2>";
+        echo "<h3>Notable Image from AO-92</h3>";
         $imageDir = "fox1d/images";
         $idLink = 4;
     } else if ($id == 4) {
@@ -357,6 +356,12 @@ FoxTelem comes with a manual which you can find from the Help menu.  It covers t
     if ($newest_file != "" && $newest_file != 'index.html') {
         echo '<a href=showImages.php?id='.$idLink.'&start='.$newest_file.'><figure><img style="border:10px solid black;" src="'.$imageDir.'/'.$newest_file.'" alt="Image from spacecraft '.getName($idLink).'" /><figcaption>'.$newest_file.'</figcaption></figure></a>';
     }
+    if ($id=='0') {
+       # latest(4, "fox1d/images");
+        latest(6, "");
+        latest(1, "");
+    } 
+    mysqli_close($conn);
 }
 ?>
 </div>

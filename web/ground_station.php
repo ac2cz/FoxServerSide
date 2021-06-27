@@ -1,6 +1,8 @@
 <html>
 <head>
 <title>Ground Station Details</title>
+<?php include "head.php"; ?>
+<?php include "getName.php"; ?>
 <link rel="stylesheet" type="text/css" media="all" href="http://www.amsat.org/wordpress/wp-content/themes/generatepress/style.css" />
 </head>
 <body>
@@ -23,10 +25,7 @@
     if (!is_numeric($id)) { die("invalid paramater"); }
     if ($id == "") $id=1;
     if ($DB == "") $DB="FOXDB";
-    if ($id == 1) $name="1A";
-    if ($id == 2) $name="1B";
-    if ($id == 3) $name="1Cliff";
-    if ($id == 4) $name="1D";
+    $name=getName($id);
 
     if ($id == 0) {
         $name="ALL";
@@ -34,7 +33,7 @@
         echo "<h1 class=entry-title>All Fox: Ground Station $STATION - Last 7 days</h1>";
     } else {
         $idwhere="and id=$id";
-        echo "<h1 class=entry-title>FOX-$name: Ground Station $STATION - Last 7 days</h1>";
+        echo "<h1 class=entry-title>$name: Ground Station $STATION - Last 7 days</h1>";
     }
     $mysqli = mysqli_connect($dbhost, $dbuser, $dbpass, $DB);
     #$mysqli = mysqli_connect('localhost', $dbuser, $dbpass, $db);
@@ -48,7 +47,8 @@
     echo "<table cellspacing='0' cellpadding='0' width=1024 border='0'>";
     echo "<tr><td><strong>Ground station</strong></td>".
          "<td align='center'><strong>DUV Frames</strong></td>".
-         "<td align='center'><strong>HighSpeed Frames</strong></td>";
+         "<td align='center'><strong>HighSpeed Frames</strong></td>".
+         "<td align='center'><strong>PSK Frames</strong></td>";
    
     $sql = sprintf("select count(date_time) from STP_HEADER where receiver='%s' %s and timestampdiff(MINUTE,date_time,now()) < 90;",$STATION, $idwhere);
     if ($result = mysqli_query($mysqli, $sql )) {
@@ -69,12 +69,13 @@
         die('Could not get data: ');
     }
     
-    $sql = sprintf("select receiver, sum(case when source like '%%duv' then 1 else 0 end) DUV, sum(case when source like '%%highspeed' then 1 else 0 end) HighSpeed from STP_HEADER where receiver='%s' %s and timestampdiff(DAY,date_time,now()) < 7 ",$STATION, $idwhere);
+    $sql = sprintf("select receiver, sum(case when source like '%%duv' then 1 else 0 end) DUV, sum(case when source like '%%highspeed' then 1 else 0 end) HighSpeed,  sum(case when source like '%%bpsk' then 1 else 0 end) PSK from STP_HEADER where receiver='%s' %s and timestampdiff(DAY,date_time,now()) < 7 ",$STATION, $idwhere);
     if ($result = mysqli_query($mysqli, $sql )) {
         while($row = mysqli_fetch_assoc($result)) {
             echo "<tr><td>{$row['receiver']}</td>  ".
              "<td align='center'>{$row['DUV']}</td>".
-             "<td align='center'>{$row['HighSpeed']}</td> </tr> ";
+             "<td align='center'>{$row['HighSpeed']}</td> ".
+             "<td align='center'>{$row['PSK']}</td></tr> ";
         }
         mysqli_free_result($result);
     } else {
@@ -120,7 +121,7 @@
             $TOTAL=$RTPAYLOADS + $MAXPAYLOADS + $MINPAYLOADS + $RADPAYLOADS;
             echo "<strong>Total Payloads:</strong> $TOTAL </br>";
             mysqli_free_result($result);
-        } else { die('Could not get data: '); }
+        } else { echo('Experiment: Could not get data '); }
     }
 
     # Now display the station details that we have stored
