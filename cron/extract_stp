@@ -1,24 +1,28 @@
 #!/bin/bash
 
 DATE=`date +%Y-%m-%d-%T`
-DIR=~/FoxServer/extract2
+DIR=~/cron
+NAME=fox1c
 password=$(/bin/cat ~/.fox_pw)
 
 function extractStp {
     ID=$1
-    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM STP_HEADER where id=${ID} order by resets, uptime; " | sed 's/\t/,/g' > $DIR/server_stp.log
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM STP_HEADER where id=${ID} and stpDate != '' and stpDate not like ',%' order by resets, uptime; " | sed 's/\t/,/g' > $DIR/${NAME}.stp
 }
 
 function extractStpArchive {
     ID=$1
-    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM STP_HEADER_ARCHIVE where id=${ID} and date_time > '2018-07-15 20:00:00' order by resets, uptime; " | sed 's/\t/,/g' > $DIR/server_stp_archive.log
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM STP_HEADER_ARCHIVE where id=${ID} and date_time > '2019-07-15 20:00:00' and stpDate != '' and stpDate not like ',%' order by resets, uptime; " | sed 's/\t/,/g' > $DIR/${NAME}_archive.stp
 }
-
-#extractStp 1
-extractStpArchive 1
+ID=$1
+NAME=$2
+extractStp $ID 
+extractStpArchive $ID
 
 cd $DIR
-tar cf server_stp.tar server_stp.log server_stp_archive.log
-gzip -f server_stp.tar
-cp -f server_stp.tar.gz ~/tlm/ao85
+#tar cf ${NAME}_stp.tar ${NAME}.stp 
+#tar cf ${NAME}_stp.tar ${NAME}_archive.stp
+tar cf ${NAME}_stp.tar ${NAME}.stp ${NAME}_archive.stp
+gzip -f ${NAME}_stp.tar
+cp -f ${NAME}_stp.tar.gz ~/tlm/$NAME
 #rm -f *.log

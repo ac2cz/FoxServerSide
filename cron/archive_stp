@@ -7,7 +7,7 @@ DIR=~/cron
 password=$(/bin/cat ~/.fox_pw)
 MAIL_TO="g0kla@arrl.net"
 
-mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " call ArchiveSTPHeaders();" &> $DIR/archive.log
+mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " call ArchiveSTPHeaders_v2();" &> $DIR/archive.log
 
 # If return code of mysql not 0 then mail error
 if [ $? -ne 0 ]; then

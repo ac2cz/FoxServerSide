@@ -1,6 +1,10 @@
 MAILTO=g0kla@arrl.net,jfitzgerald@alum.wpi.edu
-*/5 * * * * /home/tlmmgr/cron/leaderboard.cron
-* * * * * /home/tlmmgr/cron/service_running
 * * * * * /home/tlmmgr/cron/server_running
-*/5 * * * * /home/tlmmgr/cron/extract_fox1
-55 23 * * * /home/tlmmgr/cron/unprocessed_files
+* * * * * /home/tlmmgr/cron/service_running
+* * * * * /home/tlmmgr/cron/processImage_running
+5 * * * * /home/tlmmgr/cron/extract_fox
+*/5 * * * * /home/tlmmgr/cron/extract_hs1 > /dev/null
+00 21 1 * * /home/tlmmgr/cron/archive_prev_month
+45 23 * * * /home/tlmmgr/cron/unprocessed_files
+50 23 * * * /home/tlmmgr/cron/new_resets_check
+55 23 * * * /home/tlmmgr/cron/archive_stp

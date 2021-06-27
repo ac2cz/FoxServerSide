@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Script to check if FOX has had a new reset
+
+DATE=`date +%Y-%m-%d-%T`
+DIR=~/cron
+OPS_DIR=~/tlm/ops
+password=$(/bin/cat ~/.fox_pw)
+MAIL_TO="g0kla@arrl.net wa4sca@gmail.com marklhammond@gmail.com glasbrenner@mindspring.com"
+#MAIL_TO="g0kla@arrl.net"
+
+function checkReset {
+    ID=$1
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e "select date_time, id, resets, uptime from STP_HEADER where id = 6 and date_time >  '2020-03-21 11:52:00' and uptime < 7000;;" | sed 's/\t/,/g' > $DIR/husky_reset.log
+
+    #/bin/grep -Fv  $DIR/max_reset.log  $OPS_DIR/FOX${1}T0.txt > $DIR/missing_resets.log
+    #case "$(cat $DIR/missing_resets.log  | wc -l)" in
+    case "$(/bin/cat  $DIR/husky_reset.log | wc -l)" in
+
+    0)  # nothing to do
+    ;;
+    *) echo "Potential HUSKY reset with no MRAM update. $(date)" > /tmp/resets.out
+	/bin/cat $DIR/husky_reset.log >> /tmp/resets.out
+
+#        /bin/mail -s "Fox $ID reset with MRAM corrupt" g0kla@arrl.net < /tmp/resets.out
+        /bin/mail -s "Fox $ID reset with MRAM corrupt" $MAIL_TO < /tmp/resets.out
+#        rm /tmp/resets.out
+    ;;
+
+    esac
+
+}
+
+checkReset 6
