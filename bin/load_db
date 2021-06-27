@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Script to reload the database
+
+DATE=`date +%Y-%m-%d-%T`
+password=$(/bin/cat ~/.fox_pw)
+
+    FILE=$1
+    mysql --user=g0kla --password=$password FOXDB < $FILE
+

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Script to dump out the DDL for the database
+
+DATE=`date +%Y-%m-%d-%T`
+password=$(/bin/cat ~/.fox_pw)
+
+    FILE=$1
+    mysqldump --no-data --user=g0kla --password=$password FOXDB > $FILE 
+

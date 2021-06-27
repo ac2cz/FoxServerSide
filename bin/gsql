@@ -1,1 +1,5 @@
-mysql --user=g0kla --password
+#!/bin/bash
+
+password=$(/bin/cat ~/.fox_pw)
+
+mysql --user=g0kla --password=$password --database=FOXDB
