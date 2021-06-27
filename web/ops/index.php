@@ -22,6 +22,9 @@
 <html>
 <head>
 <title>Fox Operations</title>
+<?php include "../head.php"; ?>
+<?php include "../getName.php"; ?>
+
 <link rel="stylesheet" type="text/css" media="all" href="http://www.amsat.org/wordpress/wp-content/themes/twentyeleven-amsat-child/style.css" />
 </head>
 <body>
@@ -31,25 +34,46 @@
 Logged in as: <?php echo htmlentities($_SESSION['user']['username'], ENT_QUOTES, 'UTF-8'); ?><br /> 
 <?php if(($_SESSION['user']['admin']) >= '5') { 
 echo '
-<h2>FOX-1A Maintenance</h2>
-<a href="show_t0id.php?id=1">Calculate Time Zero for a Reset</a><br /> 
-<a href="edit_t0id.php?id=1">Edit Time Zero Resets File</a><br /> 
-<h2>FOX-1B Maintenance</h2>
+<h3>Maintenance</h3>
+<table>
+<tr><td>FOX-1B</td>
+<td>
 <a href="show_t0id.php?id=2">Calculate Time Zero for a Reset</a><br /> 
 <a href="edit_t0id.php?id=2">Edit Time Zero Resets File</a><br /> 
-<h2>FOX-1C Maintenance</h2>
+</td></tr>
+<tr><td>FOX-1C</td>
+<td>
 <a href="show_t0id.php?id=3">Calculate Time Zero for a Reset</a><br /> 
 <a href="edit_t0id.php?id=3">Edit Time Zero Resets File</a><br /> 
-<h2>FOX-1D Maintenance</h2>
+</td></tr>
+<tr><td>FOX-1E</td>
+<td>
+<a href="show_t0id.php?id=5">Calculate Time Zero for a Reset</a><br /> 
+<a href="edit_t0id.php?id=5">Edit Time Zero Resets File</a><br /> 
+</td></tr>
+</table>
+<h3>Older Spacecraft</h3>
+<table>
+<tr><td>FOX-1A</td>
+<td>
+<a href="show_t0id.php?id=1">Calculate Time Zero for a Reset</a><br /> 
+<a href="edit_t0id.php?id=1">Edit Time Zero Resets File</a><br /> 
+</td></tr>
+<tr><td>FOX-1D</td>
+<td>
 <a href="show_t0id.php?id=4">Calculate Time Zero for a Reset</a><br /> 
 <a href="edit_t0id.php?id=4">Edit Time Zero Resets File</a><br /> 
-<h2>HuskySat Maintenance</h2>
+</td></tr>
+<tr><td>HuskySat</td>
+<td>
 <a href="show_t0id.php?id=6">Calculate Time Zero for a Reset</a><br /> 
 <a href="edit_t0id.php?id=6">Edit Time Zero Resets File</a><br /> 
+</td></tr>
+</table>
 ';
 }
 ?>
-<h2>Admin</h2>
+<h3>Admin</h3>
 <a href="memberlist.php">Ops Team</a><br /> 
 <?php
 if(($_SESSION['user']['admin']) == '10') { 

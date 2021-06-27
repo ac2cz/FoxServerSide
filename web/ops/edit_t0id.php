@@ -34,6 +34,7 @@ $name=getName($id);
 <html>
 <head>
 <title><?php echo $name?> Time 0 for Resets</title>
+
 </head>
 <body>
 <?php include "header.php"; ?>
