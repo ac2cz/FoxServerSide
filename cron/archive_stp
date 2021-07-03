@@ -11,7 +11,7 @@ mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e 
 
 # If return code of mysql not 0 then mail error
 if [ $? -ne 0 ]; then
-        /bin/mail -s "Error Running the STP Archive Stored Procedure" $MAIL_TO < $DIR/archive.log
+        /usr/bin/mail -s "Error Running the STP Archive Stored Procedure" $MAIL_TO < $DIR/archive.log
 fi
 
 

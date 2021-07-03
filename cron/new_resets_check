@@ -22,7 +22,7 @@ function checkMaxReset {
     case "$(/bin/grep $RESET $OPS_DIR/FOX${ID}T0.txt  | wc -l)" in
 
     0) echo "Fox $ID is missing latest reset $RESET in the T0 File. $(date)" > /tmp/resets.out
-        /bin/mail -s "Fox $ID missing reset" $MAIL_TO < /tmp/resets.out
+        /usr/bin/mail -s "Fox $ID missing reset" $MAIL_TO < /tmp/resets.out
 #        rm /tmp/resets.out
     ;;
 

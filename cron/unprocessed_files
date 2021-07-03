@@ -9,7 +9,7 @@ case "$(/bin/ls $DIR | /bin/grep -v processed | /bin/grep -v null | wc -l)" in
 ;;
 
 *) echo "AMSAT.org FoxServer did not process all files on $(date)" >> $logfile
-    /bin/mail -s "AMSAT.org Server did not process all files today" 16465751481@tmomail.net <<EOF
+    /usr/bin/mail -s "AMSAT.org Server did not process all files today" 16465751481@tmomail.net <<EOF
 $DIR
 EOF
 ;;

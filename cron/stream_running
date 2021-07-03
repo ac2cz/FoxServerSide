@@ -14,7 +14,7 @@ case "$(/bin/ps auxwww | /bin/grep FoxStream.jar | /bin/grep -v grep | wc -l)" i
     /bin/ps auxwww | /bin/grep FoxStream.jar > /tmp/ps.out
     /bin/cat ~/.fox_pw | /usr/bin/java -Xmx128M -Xms32M -jar ~/FoxServer/FoxStream.jar g0kla FOXDB & >> $logfile 2>&1 &
 
-    /bin/mail -s "Fox Stream was not running on $server and was restarted" g0kla@arrl.net 16465751481@tmomail.net < /tmp/ps.out
+    /usr/bin/mail -s "Fox Stream was not running on $server and was restarted" g0kla@arrl.net 16465751481@tmomail.net < /tmp/ps.out
     rm /tmp/ps.out
 ;;
 

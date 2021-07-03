@@ -21,7 +21,7 @@ def processLog(sat, logFile):
     with open(dir+os.sep+sat+logFile+".log", "r") as f:
         idx = open(DB+os.sep+sat+logFile+".idx", "w")
         for line in f:
-	    fields = line.split(',')
+            fields = line.split(',')
             if (linesAdded > 0) and ((fields[2] != segReset) or (linesAdded == MAX_SEGMENT_SIZE)):
                 # Time to create a new segment.  New reset hit or segment is full
                 idx.write(str(segReset)+","+str(segUptime)+","+str(linesAdded)+","+str(segFilename)+"\n")

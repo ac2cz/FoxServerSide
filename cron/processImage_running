@@ -11,7 +11,7 @@ case "$(/bin/ps auxwww | /bin/grep $process | /bin/grep -v grep | wc -l)" in
     cd ~/cron
     /bin/ps auxwww | grep $process > /tmp/ps.out
     ~/cron/$process ~/FoxServer/images & >> $logfile 2>&1 &
-    /bin/mail -s "$server was not running $process and it was restarted" g0kla@arrl.net 16465751481@tmomail.net < /tmp/ps.out
+    /usr/bin/mail -s "$server was not running $process and it was restarted" g0kla@arrl.net 16465751481@tmomail.net < /tmp/ps.out
     rm /tmp/ps.out
 ;;
 
@@ -19,7 +19,7 @@ case "$(/bin/ps auxwww | /bin/grep $process | /bin/grep -v grep | wc -l)" in
 ;;
 
 *) echo "$process running MULTIPLE times $(date)" >> $logfile
-    /bin/mail -s "$server is running multipe copies of $process" g0kla@arrl.net 16465751481@tmomail.net <<EOF
+    /usr/bin/mail -s "$server is running multipe copies of $process" g0kla@arrl.net 16465751481@tmomail.net <<EOF
 Multiple copies
 EOF
 ;;

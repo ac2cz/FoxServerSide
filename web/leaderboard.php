@@ -5,8 +5,8 @@ session_start()
 <head>
 <?php
 if($_POST["call"]) {
-    $callsign=$_POST['call'];
-    $_SESSION['user'] = $callsign;
+    #$callsign=$_POST['call'];
+    $_SESSION['user'] = $_POST['call'];
     header("Location: " . $_SERVER['REQUEST_URI']);
     exit();
 }
@@ -174,7 +174,6 @@ table, th, td {
     # This <div> holds the individual spacecrat results to the right
     echo "<div class='col-2 latest-stats' style='float:right;'>";
     if ($id=='0') {
-        latest(5, "");
         latest(3, "fox1c/images");
         latest(2, "");
         latest(4, "fox1d/images");
@@ -217,12 +216,14 @@ table, th, td {
         }
     }
     if ($result = mysqli_query($conn, $sql )) {
-        if ($callsign == "" && !empty($_SESSION['user'])) {
+	$callsign = "";
+        if (!empty($_SESSION['user'])) {
             $callsign=$_SESSION['user'];
         }
         $j=1;
         while($row = mysqli_fetch_assoc($result) ) {
-            if ($j < $ROW_LIMIT || strcasecmp($row['receiver'], $callsign) == 0) {
+            if ($j < $ROW_LIMIT || ($callsign != "" && strcasecmp($row['receiver'], $callsign) == 0)) {
+            #if ($j < $ROW_LIMIT ) {
                 echo "<tr><td align='center'>$j</td> ".
                 "<td><a href=ground_station.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td>  ".
                 "<td align='center'>".number_format($row['DUV']+$row['HighSpeed'])."</td>".
@@ -321,7 +322,7 @@ FoxTelem comes with a manual which you can find from the Help menu.  It covers t
 </div>
 <?php
     $idLink = $id;
-    if ($id==0 || $id == 3 || $id == 4) {
+    if ($id==0 || $id == 4) {
     echo "<div class='col-1'>";
     if ($id == 0) {
         echo "<h2>Silent spacecraft memorial</h2>";
@@ -336,7 +337,7 @@ FoxTelem comes with a manual which you can find from the Help menu.  It covers t
         $imageDir = "fox1c/images";
     }
     #$files = scandir('/srv/www/www.amsat.org/public_html/tlm/fox1d/images', SCANDIR_SORT_DESCENDING);
-    $files = glob("/srv/www/www.amsat.org/public_html/tlm/".$imageDir."/*.jpg.comments.html");
+    $files = glob("/home/tlmmgr/tlm/".$imageDir."/*.jpg.comments.html");
     usort($files, function($a, $b){
         return filemtime($a) < filemtime($b);
     });
@@ -360,6 +361,7 @@ FoxTelem comes with a manual which you can find from the Help menu.  It covers t
        # latest(4, "fox1d/images");
         latest(6, "");
         latest(1, "");
+        latest(5, "");
     } 
     mysqli_close($conn);
 }
