@@ -6,7 +6,7 @@
 import sys
 import glob
 import os
-import urllib2
+import urllib3
 import time
 
 
@@ -55,8 +55,11 @@ def processPage(id, prevPage, nextPage, images, webDir):
             col=0;
         content = content + "<div class='col-30-1' style='float:left;'>"
         requestUrl1='http://127.0.0.1:8080/getSatUtcAtResetUptime?sat='+str(id)+'&reset='+str(reset)+'&uptime='+str(uptime)
-        time = urllib2.urlopen(requestUrl1).read()
-        title = "Pic: " + picId + " : " + reset + " / " + uptime + "<br>" + time 
+        http = urllib3.PoolManager()
+        response = http.request('GET', requestUrl1)
+        time = response.data.decode('utf-8')
+        #time = urllib2.urlopen(requestUrl1).read()
+        title = "Pic: " + str(picId) + " : " + str(reset) + " / " + str(uptime) + "<br>" + str(time) 
         name = item + "?"+str(fileSize) 
         command = "showSubPage.php?id=" + str(id) + "&image=" + name + "&pc=" + picId + "&reset=" + reset + "&uptime=" + uptime + "&zoom=1&mapZoom=5"
         content = content + "<a href="+command+">"+imgTag1 +name + imgTag2 + title + imgTag3 + "</a>"

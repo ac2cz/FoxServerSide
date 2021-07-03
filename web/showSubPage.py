@@ -5,7 +5,7 @@
 
 import sys
 import os
-import urllib2
+import urllib3
 
 def getFoxName(id):
     names = ("AO-85 (Fox-1A)","RadFxSat (Fox-1B)","Fox-1Cliff","Fox-1D","Fox-1E")
@@ -16,12 +16,18 @@ def getFoxName(id):
 def makeImagePage(id, pic, picId, reset, uptime, zoom, mapZoom):
     webDir = os.path.dirname(pic)
     requestUrl1='http://127.0.0.1:8080/getSatUtcAtResetUptime?sat='+str(id)+'&reset='+str(reset)+'&uptime='+str(uptime)
-    time = urllib2.urlopen(requestUrl1).read()
-    title = "Pic: " + picId + " : " + reset + " / " + uptime + "<br>" + time
+    http = urllib3.PoolManager()
+    response = http.request('GET', requestUrl1)
+    time = response.data.decode('utf-8')
+    #time = urllib2.urlopen(requestUrl1).read()
+    title = "Pic: " + str(picId) + " : " + str(reset) + " / " + str(uptime) + "<br>" + str(time)
     requestUrl='http://127.0.0.1:8080/getSatLatLonAtResetUptime?sat='+str(id)+'&reset='+str(reset)+'&uptime='+str(uptime)
-    r = urllib2.urlopen(requestUrl).read()
-    #print("DEBUG position: " + r)
-    latLon = r.split(",")
+    #print("DEBUG requestURL: " + requestUrl)
+    response = http.request('GET', requestUrl)
+    r = response.data.decode('utf-8')
+    #r = urllib2.urlopen(requestUrl).read()
+    #print("DEBUG position: " + str(r))
+    latLon = str(r).split(",")
     lat = 0
     lon = 0
     if (len(latLon) == 2):
