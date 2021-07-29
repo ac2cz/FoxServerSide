@@ -126,7 +126,7 @@ table, th, td {
     # MAIN - Execution stats here
     #
     $dbhost = 'localhost';
-    $dbuser = 'g0kla';
+    $dbuser = 'foxrpt';
     $dbpass = 'amsatfox';
 
 	$id = 0;
@@ -182,6 +182,7 @@ table, th, td {
     # This <div> holds the individual spacecrat results to the right
     echo "<div class='col-2 latest-stats' style='float:right;'>";
     if ($id=='0') {
+        latest(5, "");
         latest(3, "fox1c/images");
         latest(2, "");
         latest(4, "fox1d/images");
@@ -369,7 +370,6 @@ FoxTelem comes with a manual which you can find from the Help menu.  It covers t
        # latest(4, "fox1d/images");
         latest(6, "");
         latest(1, "");
-        latest(5, "");
     } 
     mysqli_close($conn);
 }
