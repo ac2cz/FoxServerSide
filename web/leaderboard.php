@@ -4,13 +4,13 @@ session_start()
 <html>
 <head>
 <?php
-if($_POST["call"]) {
+if(isset($_POST["call"])) {
     #$callsign=$_POST['call'];
     $_SESSION['user'] = $_POST['call'];
     header("Location: " . $_SERVER['REQUEST_URI']);
     exit();
 }
-if($_POST["clear"]) {
+if(isset($_POST["clear"])) {
     $_SESSION['user'] = "";
     header("Location: " . $_SERVER['REQUEST_URI']);
     exit();
@@ -50,6 +50,8 @@ table, th, td {
             }
         }
         echo " | <a href=health.php?id=$i&port=$PORT>latest spacecraft health </a>";
+		if ($i >= 5)
+            echo "| <a href=wod.php?id=$i&port=$PORT>whole orbit data </a>";
         if ($imageDir != "")
             echo "| <a href=showImages.php?id=$i>Camera Images</a>";
         echo " <br>";
@@ -124,16 +126,21 @@ table, th, td {
     # MAIN - Execution stats here
     #
     $dbhost = 'localhost';
-    $dbuser = 'foxrpt';
+    $dbuser = 'g0kla';
     $dbpass = 'amsatfox';
 
+	$id = 0;
     $id = $_GET['id'];
-    $show = $_GET['show'];
+	$show = "";
+	if (isset($_GET['show']))
+		$show = $_GET['show'];
     if ($show == "")
         $ROW_LIMIT=11;
     else
         $ROW_LIMIT=999999;
-    $period = $_GET['period'];
+	$period = 30;
+	if (isset($_GET['period']))
+		$period = $_GET['period'];
     if ($period == "")
         $PERIOD=30;
     else {
@@ -141,14 +148,15 @@ table, th, td {
         $PERIOD=$period;
     }
     if (!is_numeric($id)) { die("invalid paramater"); }
-    if (id < 0 || $id > 6) { die("invalid FoxId"); }
+    if ($id < 0 || $id > 6) { die("invalid FoxId"); }
     # Uncomment DB and port for test environments, if needed
     #$DB = $_GET['db'];
     #$PORT = $_GET['port'];
 
     if ($id == "") { $id = "1"; }
-    if ($DB == "") { $DB="FOXDB"; }
-    $where="where STP_HEADER.id=$id";
+    #if ($DB == "") { $DB="FOXDB"; }
+    $DB = "FOXDB";
+	$where="where STP_HEADER.id=$id";
     $archive_where="and STP_HEADER.id=STP_HEADER_ARCHIVE_COUNT.id and STP_HEADER.receiver=STP_HEADER_ARCHIVE_COUNT.receiver";
     $name=getName($id);
     if ($id == '0') {
