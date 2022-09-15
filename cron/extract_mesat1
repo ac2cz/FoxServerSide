@@ -1,0 +1,90 @@
+#!/bin/bash
+
+if [ $# -lt 2 ]; then
+    echo "Usage: extract_ltm <id> <series> "
+    exit 1;
+fi
+ID=$1
+SERIES=$2
+LOGDIR=${SERIES}-${ID}
+
+PROGNAME=$0
+DATE=`date +%Y-%m-%d-%T`
+DIR=~/FoxServer/extract2
+password=$(/bin/cat ~/.fox_pw)
+
+function error_exit() {
+    echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
+    exit 1
+}
+
+function extract {
+    ID=$1
+    LOGDIR=$2
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM ${SERIES}${ID}RTTELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/${SERIES}${ID}rttelemetry.log
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error_exit "$LINENO: An SQL error has occurred."
+    fi
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM ${SERIES}${ID}MINTELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/${SERIES}${ID}mintelemetry.log
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error_exit "$LINENO: An SQL error has occurred."
+    fi
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM ${SERIES}${ID}MAXTELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/${SERIES}${ID}maxtelemetry.log
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error_exit "$LINENO: An SQL error has occurred."
+    fi
+}
+
+function extractEXP {
+    ID=$1
+    LOGDIR=$2
+    TABLE=$3
+    FILENAME=$4
+
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM ${SERIES}${ID}${TABLE} order by resets, uptime, type; " | sed 's/\t/,/g' > $DIR/$LOGDIR/${SERIES}${ID}${FILENAME}.log
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error_exit "$LINENO: An SQL error has occurred."
+    fi
+}
+
+function extractWOD {
+    ID=$1
+    LOGDIR=$2
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT * FROM ${SERIES}${ID}WODTELEMETRY order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/${SERIES}${ID}wodtelemetry.log
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error_exit "$LINENO: An SQL error has occurred in WOD extract."
+    fi
+}
+
+
+function extractCAN {
+    ID=$1
+    LOGDIR=$2
+    mysql --user=g0kla --password=$password --database=FOXDB --skip-column-names -e " SELECT captureDate, id, resets, uptime, type, newMode, UW_ID0, UW_ID1, UW_ID2, UW_ID3, BYTE0, BYTE1, BYTE2, BYTE3, BYTE4, BYTE5, BYTE6, BYTE7  FROM ${SERIES}${ID}CANPACKET order by resets, uptime; " | sed 's/\t/,/g' > $DIR/$LOGDIR/${SERIES}${ID}canpacket.log
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error_exit "$LINENO: An SQL error has occurred in CAN PACKET extract."
+    fi
+}
+
+function packageLogs {
+    ID=$1
+    LOGDIR=$2
+    cd $DIR/$LOGDIR || error_exit "$LINENO: An error has occurred."
+    rm -rf FOXDB || error_exit "$LINENO: An error has occurred."
+    tar cf serverlogs.tar *.log || error_exit "$LINENO: An error has occurred."
+    gzip -f serverlogs.tar || error_exit "$LINENO: An error has occurred."
+    cp -f serverlogs.tar.gz ~/tlm/$LOGDIR || error_exit "$LINENO: An error has occurred."
+    ~/cron/convertLTMDB.py . || error_exit "$LINENO: An error has occurred."
+    tar cf FOXDB.tar FOXDB || error_exit "$LINENO: An error has occurred."
+    gzip -f FOXDB.tar || error_exit "$LINENO: An error has occurred."
+    cp -f FOXDB.tar.gz ~/tlm/$LOGDIR || error_exit "$LINENO: An error has occurred."
+}
+
+extract $ID $LOGDIR || error_exit "$LINENO: An error has occurred."
+extractEXP $ID $LOGDIR DIAGNOSTICTELEMETRY diagnostictelemetry || error_exit "$LINENO: An error has occurred."
+extractEXP $ID $LOGDIR SCILONGTELEMETRY scilongtelemetry || error_exit "$LINENO: An error has occurred."
+extractWOD $ID $LOGDIR || error_exit "$LINENO: An error has occurred."
+extractEXP $ID $LOGDIR CANPACKET canpacket || error_exit "$LINENO: An error has occurred."
+packageLogs $ID $LOGDIR || error_exit "$LINENO: An error has occurred."
+
+#rm -f *.log
