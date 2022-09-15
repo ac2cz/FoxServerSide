@@ -45,8 +45,8 @@ def processLog(sat, logFile):
 # We extract the Fox Id and the Type from the filename then process it 
 def processType(match):
     logs = glob.glob(dir + os.sep + match)
-    if len(logs) == 0:
-        print ('No log files found in ' + dir)
+#    if len(logs) == 0:
+#        print ('No log files found in ' + dir)
     for item in logs:
         log = os.path.basename(item)
         id=log[0:4]
@@ -81,3 +81,7 @@ processType("*maxtelemetry.log")
 processType("*mintelemetry.log")
 processType("*radtelemetry.log")
 processType("*radtelemetry2.log")
+processType("*wodtelemetry.log")
+processType("*wodradtelemetry.log")
+processType("*wodradtelemetry2.log")
+
