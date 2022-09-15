@@ -148,7 +148,7 @@ table, th, td {
         $PERIOD=$period;
     }
     if (!is_numeric($id)) { die("invalid paramater"); }
-    if ($id < 0 || $id > 6) { die("invalid FoxId"); }
+    if ($id < 0 || $id > 255) { die("invalid FoxId"); }
     # Uncomment DB and port for test environments, if needed
     #$DB = $_GET['db'];
     #$PORT = $_GET['port'];
@@ -160,7 +160,7 @@ table, th, td {
     $archive_where="and STP_HEADER.id=STP_HEADER_ARCHIVE_COUNT.id and STP_HEADER.receiver=STP_HEADER_ARCHIVE_COUNT.receiver";
     $name=getName($id);
     if ($id == '0') {
-        $name = "FOX";
+        $name = "AMSAT";
         $where="";
     	$archive_where="on STP_HEADER.receiver=STP_HEADER_ARCHIVE_COUNT.receiver";
     }
@@ -182,6 +182,7 @@ table, th, td {
     # This <div> holds the individual spacecrat results to the right
     echo "<div class='col-2 latest-stats' style='float:right;'>";
     if ($id=='0') {
+        latest(10, "");
         latest(5, "");
         latest(3, "fox1c/images");
         latest(2, "");
@@ -302,7 +303,7 @@ table, th, td {
 <div class='col-2' style='float:right;'>
 <h2>FoxTelem</h2>
 <p>
-<a href=https://www.g0kla.com/foxtelem/index.php>FoxTelem</a> is the program you use to decode the data transmissions from the AMSAT Fox-1 series of spacecraft.
+<a href=https://www.g0kla.com/foxtelem/index.php>FoxTelem</a> is the program you use to decode the data transmissions from the AMSAT Fox-1, LTM and GOLF series of spacecraft.
 It will decode, store and allow analysis of telemetry and onboard experiments.
 </p>
 <p>
