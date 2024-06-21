@@ -41,15 +41,10 @@ echo '
 <a href="show_t0id.php?id=2">Calculate Time Zero for a Reset</a><br /> 
 <a href="edit_t0id.php?id=2">Edit Time Zero Resets File</a><br /> 
 </td></tr>
-<tr><td>FOX-1C</td>
+<tr><td>MESAT-1</td>
 <td>
-<a href="show_t0id.php?id=3">Calculate Time Zero for a Reset</a><br /> 
-<a href="edit_t0id.php?id=3">Edit Time Zero Resets File</a><br /> 
-</td></tr>
-<tr><td>FOX-1E</td>
-<td>
-<a href="show_t0id.php?id=5">Calculate Time Zero for a Reset</a><br /> 
-<a href="edit_t0id.php?id=5">Edit Time Zero Resets File</a><br /> 
+<a href="show_t0id.php?id=10">Calculate Time Zero for a Reset</a><br /> 
+<a href="edit_t0id.php?id=10&series=LTM">Edit Time Zero Resets File</a><br /> 
 </td></tr>
 </table>
 <h3>Older Spacecraft</h3>
@@ -59,10 +54,20 @@ echo '
 <a href="show_t0id.php?id=1">Calculate Time Zero for a Reset</a><br /> 
 <a href="edit_t0id.php?id=1">Edit Time Zero Resets File</a><br /> 
 </td></tr>
+<tr><td>FOX-1C</td>
+<td>
+<a href="show_t0id.php?id=3">Calculate Time Zero for a Reset</a><br /> 
+<a href="edit_t0id.php?id=3">Edit Time Zero Resets File</a><br /> 
+</td></tr>
 <tr><td>FOX-1D</td>
 <td>
 <a href="show_t0id.php?id=4">Calculate Time Zero for a Reset</a><br /> 
 <a href="edit_t0id.php?id=4">Edit Time Zero Resets File</a><br /> 
+</td></tr>
+<tr><td>FOX-1E</td>
+<td>
+<a href="show_t0id.php?id=5">Calculate Time Zero for a Reset</a><br /> 
+<a href="edit_t0id.php?id=5">Edit Time Zero Resets File</a><br /> 
 </td></tr>
 <tr><td>HuskySat</td>
 <td>

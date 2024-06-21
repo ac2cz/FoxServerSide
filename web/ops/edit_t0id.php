@@ -29,6 +29,8 @@ if (!is_numeric($id)) { die("invalid paramater"); }
 if (id < 0 || $id > 255) { die("invalid FoxId"); }
 if ($id == "") { $id = "1"; }
 $name=getName($id);
+$series = $_GET['series'];
+if ($series == "") { $series = "FOX"; }
 ?>
 
 <html>
@@ -49,7 +51,7 @@ when the last reset was 500, then you can use the form below to add a set of row
 <?php
 date_default_timezone_set('UTC');
 $today = date("YmdHis");
-$file_path= "FOX".$id."T0.txt";
+$file_path= $series.$id."T0.txt";
 // Open the file to get existing content
 $text = file_get_contents($file_path);
 if($_POST["save"]) {

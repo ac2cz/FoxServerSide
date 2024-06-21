@@ -4,13 +4,13 @@ session_start()
 <html>
 <head>
 <?php
-if(isset($_POST["call"])) {
-    #$callsign=$_POST['call'];
-    $_SESSION['user'] = $_POST['call'];
+if($_POST["call"]) {
+    $callsign=$_POST['call'];
+    $_SESSION['user'] = $callsign;
     header("Location: " . $_SERVER['REQUEST_URI']);
     exit();
 }
-if(isset($_POST["clear"])) {
+if($_POST["clear"]) {
     $_SESSION['user'] = "";
     header("Location: " . $_SERVER['REQUEST_URI']);
     exit();
@@ -33,31 +33,13 @@ table, th, td {
     # This function is run for each sat we want to display totals for
     # The results sit in the right hand column
     function latest($i, $imageDir) {
-        global $DB, $conn, $PORT, $show, $PERIOD;
+        global $DB, $conn, $PORT;
         $name=getName($i);
         $self=$_SERVER['PHP_SELF'];
-        if ($show == "") {
-            if ($PERIOD <= 30) {
-                echo "<a href=$self?id=$i&db=$DB><strong class=entry-title>$name</strong></a> ";
-            } else {
-                echo "<a href=$self?id=$i&db=$DB&period=100><strong class=entry-title>$name</strong></a> ";
-            }
-        } else {
-            if ($PERIOD <= 30) {
-                echo "<a href=$self?id=$i&db=$DB&show=all><strong class=entry-title>$name</strong></a> ";
-            } else {
-                echo "<a href=$self?id=$i&db=$DB&show=all&period=100><strong class=entry-title>$name</strong></a> ";
-            }
-        }
-        echo " | <a href=health.php?id=$i&port=$PORT>latest spacecraft health </a>";
-		if ($i >= 5)
-            echo "| <a href=wod.php?id=$i&port=$PORT>whole orbit data </a>";
+        echo "<a href=$self?id=$i&db=$DB><strong class=entry-title>$name</strong></a> | <a href=health.php?id=$i&port=$PORT>latest spacecraft health </a>";
         if ($imageDir != "")
             echo "| <a href=showImages.php?id=$i>Camera Images</a>";
         echo " <br>";
-        if ($i == 6) {
-            #echo "<b style='color:red;' class=entry-title>Only real time data being processed.  No recorded data will be stored</b><br> ";
-        }
 
         # Now calculate the total for this sat and display it
         $sql = "select (select count(*) from STP_HEADER where id=$i) as sumCountHeader;";
@@ -109,14 +91,21 @@ table, th, td {
         echo "From ground stations: <br>";
         $sql = "select distinct receiver from ( select a.receiver, a.uptime from STP_HEADER a where a.id=$i and timestampdiff(MINUTE,a.date_time,now()) < 90 order by a.resets, a.uptime desc) tmp;";
         if ($result = mysqli_query($conn, $sql )) {
-            while($row = mysqli_fetch_assoc($result)) {
-                echo "<a href=ground_station.php?id=$i&db=$DB&station={$row['receiver']}>{$row['receiver']}</a> ";
-            }
+            $row = mysqli_fetch_assoc($result);
         } else {
             die('Could not get data: ');
             #die('Could not get data: ' . mysqli_error($conn));
         }
 
+        $stations = 0; 
+        while($row = mysqli_fetch_assoc($result)) {
+            echo "<a href=ground_station.php?id=$i&db=$DB&station={$row['receiver']}>{$row['receiver']}</a> ";
+            $stations = $stations + 1;
+            if ($stations == 7) {
+                $stations=0;
+                #echo "<br>";
+            }
+        }
         mysqli_free_result($result);
         echo "<br> ";
         echo "<br> ";
@@ -129,34 +118,21 @@ table, th, td {
     $dbuser = 'foxrpt';
     $dbpass = 'amsatfox';
 
-	$id = 0;
     $id = $_GET['id'];
-	$show = "";
-	if (isset($_GET['show']))
-		$show = $_GET['show'];
+    $show = $_GET['show'];
     if ($show == "")
         $ROW_LIMIT=11;
     else
         $ROW_LIMIT=999999;
-	$period = 30;
-	if (isset($_GET['period']))
-		$period = $_GET['period'];
-    if ($period == "")
-        $PERIOD=30;
-    else {
-        if (!is_numeric($period)) { die("invalid paramater"); }
-        $PERIOD=$period;
-    }
     if (!is_numeric($id)) { die("invalid paramater"); }
-    if ($id < 0 || $id > 6) { die("invalid FoxId"); }
+    if (id < 0 || $id > 5) { die("invalid FoxId"); }
     # Uncomment DB and port for test environments, if needed
     #$DB = $_GET['db'];
     #$PORT = $_GET['port'];
 
     if ($id == "") { $id = "1"; }
-    #if ($DB == "") { $DB="FOXDB"; }
-    $DB = "FOXDB";
-	$where="where STP_HEADER.id=$id";
+    if ($DB == "") { $DB="FOXDB"; }
+    $where="where STP_HEADER.id=$id";
     $archive_where="and STP_HEADER.id=STP_HEADER_ARCHIVE_COUNT.id and STP_HEADER.receiver=STP_HEADER_ARCHIVE_COUNT.receiver";
     $name=getName($id);
     if ($id == '0') {
@@ -164,12 +140,8 @@ table, th, td {
         $where="";
     	$archive_where="on STP_HEADER.receiver=STP_HEADER_ARCHIVE_COUNT.receiver";
     }
-    if ($PERIOD <= 30)
-        echo "<h1 class=entry-title>$name Telemetry - Monthly Leaders</h1> ";
-    else
-        echo "<h1 class=entry-title>$name Telemetry - All-Time Leaders</h1> ";
-
-   # echo "<h2 style='color:red;' class=entry-title>FOX TELEMETRY SERVER is current down for maintenance</h2></p> ";
+    echo "<h1 class=entry-title>$name Telemetry Leaderboard</h1> ";
+    #echo "<h2 style='color:red;' class=entry-title>FOX TELEMETRY SERVER is current down for maintenance</h1></p> ";
     $conn = mysqli_connect($dbhost, $dbuser, $dbpass, $DB);
     if(mysqli_connect_errno($conn)) {
        # Not to be inthe production code
@@ -182,11 +154,10 @@ table, th, td {
     # This <div> holds the individual spacecrat results to the right
     echo "<div class='col-2 latest-stats' style='float:right;'>";
     if ($id=='0') {
-        #latest(5, "");
-        #latest(3, "fox1c/images");
+        latest(1, "");
         latest(2, "");
-        latest(10, "");
-        #latest(4, "fox1d/images");
+        latest(3, "fox1c/images");
+        latest(4, "fox1d/images");
     } else {
         if ($id == 3)
             latest(3, "fox1c/images");
@@ -204,85 +175,53 @@ table, th, td {
 	
     echo "<tr><td><strong>Num</strong></td>".
         "<td><strong>Ground station</strong></td>".
-        "<td align='center'><strong>FSK Frames</strong></td>".
-        "<td align='center'><strong>PSK Frames</strong></td>";
-        if ($PERIOD <= 30) {
-            echo "<td align='center'><strong>Last 30 days</strong></td>";
-        }
-        echo "<td align='center'><strong>Last 7 days</strong></td>";
+        "<td align='center'><strong>DUV Frames</strong></td>".
+        "<td align='center'><strong>9k6 Frames</strong></td>".
+        "<td align='center'><strong>Total</strong></td>".
+        "<td align='center'><strong>Last 7 days</strong></td>";
 		
     
-    if ($id==0) { # This is for all spacecraft
-        if ($PERIOD <= 30) {
-            $sql = "select id, receiver, sum(case when source like '%duv' or source like '%highspeed' then 1 else 0 end) DUV, sum(case when source like '%bpsk' then 1 else 0 end) PSK, sum(case when source like '%duv' or source like '%highspeed' or source like '%bpsk' then 1 else 0 end) total, sum(case when timestampdiff(DAY,date_time,now()) < 7 then 1 else 0 end) last from STP_HEADER group by receiver order by total DESC";
-        } else {
-            $sql = "call StpLeaderboardMthTotals()";
-        }
-    } else { # Just one spacecraft
-        if ($PERIOD <= 30) {
-            $sql = "select id, receiver, sum(case when source like '%duv' or source like '%highspeed' then 1 else 0 end) DUV, sum(case when source like '%bpsk' then 1 else 0 end) PSK, sum(case when source like '%duv' or source like '%highspeed' or source like '%bpsk' then 1 else 0 end) total, sum(case when timestampdiff(DAY,date_time,now()) < 7 then 1 else 0 end) last from STP_HEADER where id=$id group by receiver order by total DESC";
-        } else {
-            $sql = "call StpLeaderboardMthTotalsById($id)";
-        }
+    if ($id==0) {
+        $sql = "call StpLeaderboardTotals()";
+    } else {
+        $sql = "call StpLeaderboardTotalsById($id)";
     }
     if ($result = mysqli_query($conn, $sql )) {
-	$callsign = "";
-        if (!empty($_SESSION['user'])) {
+        if ($callsign == "" && !empty($_SESSION['user'])) {
             $callsign=$_SESSION['user'];
         }
         $j=1;
         while($row = mysqli_fetch_assoc($result) ) {
-            if ($j < $ROW_LIMIT || ($callsign != "" && strcasecmp($row['receiver'], $callsign) == 0)) {
-            #if ($j < $ROW_LIMIT ) {
+            if ($j < $ROW_LIMIT || strcasecmp($row['receiver'], $callsign) == 0) {
                 echo "<tr><td align='center'>$j</td> ".
                 "<td><a href=ground_station.php?id=$id&db=$DB&station={$row['receiver']}>{$row['receiver']}</a></td>  ".
-                "<td align='center'>".number_format($row['DUV']+$row['HighSpeed'])."</td>".
-                "<td align='center'>".number_format($row['PSK'])."</td> ";
-                if ($PERIOD <= 30) {
-                   echo  "<td align='center'>".number_format($row['total'])."</td> ";
-                }
-                echo "<td align='center'>".number_format($row['last'])."</td> </tr> ";
+                "<td align='center'>".number_format($row['DUV'])."</td>".
+                "<td align='center'>".number_format($row['HighSpeed'])."</td> ".
+                "<td align='center'>".number_format($row['total'])."</td> ".
+                "<td align='center'>".number_format($row['last'])."</td> </tr> ";
             }
             $j++;
         }
         mysqli_free_result($result);
     } else {
-        #die('Could not get data: ');
-        die('Could not get data: ' . mysqli_error($conn));
+        die('Could not get data: ');
+        #die('Could not get data: ' . mysqli_error($conn));
     }
+    mysqli_close($conn);
     echo "</table>";
     echo "</div>";
 	
     echo "<div style='float:left;'>";	
     $self=$_SERVER['PHP_SELF'];
     echo "<table class='tlm_table'><tr><td class=tlm_td>";
-    if ($show == "") {
-        if ($PERIOD <= 30) {
-            echo "<a href=$self?id=$id&db=$DB&show=all>Show all ground stations</a>";
-            echo "<br><a href=$self?id=$id&db=$DB&period=100>Show all-time leaderboard</a>";
-            if ($id != 0) 
-                $showAllSpacecraft = " <a href=$self?id=0&db=FOXDB>| Show all spacecraft</a>";
-        } else {
-            echo "<a href=$self?id=$id&db=$DB&show=all&period=100>Show all ground stations</a>";
-            echo "<br><a href=$self?id=$id&db=$DB>Show monthly leaderboard</a>";
-            if ($id != 0) 
-                $showAllSpacecraft = " <a href=$self?id=0&db=FOXDB&period=100>| Show all spacecraft</a>";
-        }
-    } else {
-        if ($PERIOD <= 30) {
-            echo "<a href=$self?id=$id&db=$DB>Show short leaderboard</a>";
-            echo "<br><a href=$self?id=$id&db=$DB&show=all&period=100>Show all-time leaderboard</a>";
-            if ($id != 0) 
-                $showAllSpacecraft = " <a href=$self?id=0&db=FOXDB&show=all>| Show all spacecraft</a>";
-        } else {
-            echo "<a href=$self?id=$id&db=$DB&period=100>Show short leaderboard</a>";
-            echo "<br><a href=$self?id=$id&db=$DB&show=all>Show monthly leaderboard</a>";
-            if ($id != 0) 
-                $showAllSpacecraft = " <a href=$self?id=0&db=FOXDB&show=all&period=100>| Show all spacecraft</a>";
-        }
-    }
+    if ($show == "")
+        echo "<a href=$self?id=$id&db=$DB&show=all>Show all ground stations</a>";
+    else
+        echo "<a href=$self?id=$id&db=$DB>Show short leaderboard</a>";
+    echo "<br><a href=leaderboard2.php?id=$id&db=$DB>Show monthly leaderboard</a>";
     echo "</td><td>";
-    echo $showAllSpacecraft;
+    if ($id != 0)
+        echo " <a href=$self?id=0&db=FOXDB>| Show all spacecraft</a>";
     echo "</td><td>";
     $params="id=$id&db=$DB";
     $form = '<form action="'.$self.'?'.$params.'" method="post">
@@ -303,7 +242,7 @@ table, th, td {
 <div class='col-2' style='float:right;'>
 <h2>FoxTelem</h2>
 <p>
-<a href=https://www.g0kla.com/foxtelem/index.php>FoxTelem</a> is the program you use to decode the data transmissions from the AMSAT Fox-1, LTM and GOLF series of spacecraft.
+<a href=https://www.g0kla.com/foxtelem/index.php>FoxTelem</a> is the program you use to decode the data transmissions from the AMSAT Fox-1 series of spacecraft.
 It will decode, store and allow analysis of telemetry and onboard experiments.
 </p>
 <p>
@@ -332,11 +271,10 @@ FoxTelem comes with a manual which you can find from the Help menu.  It covers t
 </div>
 <?php
     $idLink = $id;
-    if ($id==0 || $id == 4) {
+    if ($id==0 || $id == 3 || $id == 4) {
     echo "<div class='col-1'>";
     if ($id == 0) {
-        echo "<h2>Silent spacecraft memorial</h2>";
-        echo "<h3>Notable Image from AO-92</h3>";
+        echo "<h2>Notable Image from Fox-1D</h2>";
         $imageDir = "fox1d/images";
         $idLink = 4;
     } else if ($id == 4) {
@@ -347,7 +285,7 @@ FoxTelem comes with a manual which you can find from the Help menu.  It covers t
         $imageDir = "fox1c/images";
     }
     #$files = scandir('/srv/www/www.amsat.org/public_html/tlm/fox1d/images', SCANDIR_SORT_DESCENDING);
-    $files = glob("/home/tlmmgr/tlm/".$imageDir."/*.jpg.comments.html");
+    $files = glob("/srv/www/www.amsat.org/public_html/tlm/".$imageDir."/*.jpg.comments.html");
     usort($files, function($a, $b){
         return filemtime($a) < filemtime($b);
     });
@@ -367,15 +305,6 @@ FoxTelem comes with a manual which you can find from the Help menu.  It covers t
     if ($newest_file != "" && $newest_file != 'index.html') {
         echo '<a href=showImages.php?id='.$idLink.'&start='.$newest_file.'><figure><img style="border:10px solid black;" src="'.$imageDir.'/'.$newest_file.'" alt="Image from spacecraft '.getName($idLink).'" /><figcaption>'.$newest_file.'</figcaption></figure></a>';
     }
-    if ($id=='0') {
-        latest(1, "");
-        #latest(2, "");
-        latest(3, "fox1c/images");
-        latest(4, "fox1d/images");
-        latest(5, "");
-        latest(6, "");
-    } 
-    mysqli_close($conn);
 }
 ?>
 </div>
