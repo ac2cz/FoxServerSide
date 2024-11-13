@@ -43,7 +43,7 @@ echo '
 </td></tr>
 <tr><td>MESAT-1</td>
 <td>
-<a href="show_t0id.php?id=10">Calculate Time Zero for a Reset</a><br /> 
+<a href="show_t0id.php?id=10&series=LTM">Calculate Time Zero for a Reset</a><br /> 
 <a href="edit_t0id.php?id=10&series=LTM">Edit Time Zero Resets File</a><br /> 
 </td></tr>
 </table>

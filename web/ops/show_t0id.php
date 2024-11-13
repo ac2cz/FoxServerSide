@@ -27,6 +27,7 @@
 $id = $_GET['id'];
 $reset = $_GET['resets'];
 $receiver = $_GET['receiver'];
+$series = $_GET['series'];
 if (!is_numeric($id)) { die("invalid paramater"); }
 if ($reset <> "") {
     if (!is_numeric($reset)) { die("invalid paramater"); }
@@ -60,7 +61,7 @@ Subtract 1000 for each second of delay bewteen reception of the data and present
 audio to FoxTelem.  e.g. A virtual audio cable introduces delay as does a seperate SDR.
 </i>
 <p>
-Save the calcualted value and enter it into the <a href=edit_t0id.php?id=<?php echo $id?>>T0 file</a> 
+Save the calcualted value and enter it into the <a href=edit_t0id.php?id=<?php echo $id?>&series=<?php echo $series?>>T0 file</a> 
 <p>
 
 <form action="<?=$PHP_SELF?>" method="get"> 
